@@ -4,7 +4,7 @@ import { useCookies } from "react-cookie";
 function PrivateRouter({ children }) {
   const [cookieUser, setCookieUser] = useCookies(["user"]);
   
-  if (cookieUser.user !== null) {
+  if (cookieUser.user !== '') {
     return children;
   } else {
     return <Login />;

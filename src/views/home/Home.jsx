@@ -36,7 +36,7 @@ function Home(props) {
   };
 
   const logout = () => {
-    localStorage.removeItem("user");
+    setCookieUser('user', '', { path: '/' });
     navigate("/login");
   };
 

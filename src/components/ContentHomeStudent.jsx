@@ -57,11 +57,13 @@ function ContentHomeStudent(props) {
   // Khai báo các state
   const [students, setStudents] = useState([]);
   const [visible, setVisible] = useState(false);
+  const [visibleFormShowInfo, setVisibleFormShowInfo] = useState(false);
   const [titleForm, setTitleForm] = useState("");
   const [displayBtnAdd, setDisplayBtnAdd] = useState(false);
   const [idStudent, setIdStudent] = useState("");
   const [idStudentUpdate, setIdStudentUpdate] = useState("");
   const [collapsed, setCollapsed] = useState(true);
+  const [inforStudent, setInforStudent] = useState({});
 
   const [form] = Form.useForm();
 
@@ -75,7 +77,8 @@ function ContentHomeStudent(props) {
     const data = await getDataStudent();
     setStudents(data);
   };
-  
+
+  // Hàm chuyển đổi dữ liệu trước khi thêm vào bảng
   const data = students.map((student, index) => {
     return {
       key: index + 1,
@@ -157,7 +160,7 @@ function ContentHomeStudent(props) {
             title="Sure to see?"
             onClick={() => setIdStudentDelete(record)}
             onConfirm={() => {
-              
+              showProfileStudent(record);
             }}
           >
             <EyeOutlined className="icon-handle" />
@@ -210,8 +213,17 @@ function ContentHomeStudent(props) {
     form.resetFields();
   };
 
-  // Hàm tìm kiếm theo tên
+  // Hàm đóng modal hiển thị thông tin sinh viên
+  const handleCancelFormShowInfo = () => {
+    setVisibleFormShowInfo(false);
+  }
 
+  const showProfileStudent = (record) => {
+    setVisibleFormShowInfo(true);
+    setInforStudent(record);
+  }
+
+  // Hàm tìm kiếm theo mã sinh viên
   const onSearch = async (value) => {
     const students = await getDataStudent();
     const result = students.filter(student => {
@@ -223,16 +235,23 @@ function ContentHomeStudent(props) {
   // Hàm lọc sinh viên theo trạng thái
 
   const handleChangeSelectionStatus = async (value) => {
-    const result = await filterStudent("status", value);
-    setStudents(result);
+    if(value === 'all') {
+      getStudent()
+    } else {
+      const result = await filterStudent("status", value);
+      setStudents(result);
+    }
   };
 
   // Hàm lọc sinh viên theo lớp
   const handleChangeSelectionClass = async (value) => {
-    const result = await filterStudent("class", value);
-    setStudents(result);
+    if(value === 'all') {
+      getStudent()
+    } else {
+      const result = await filterStudent("class", value);
+      setStudents(result);
+    }
   };
-
 
   // Hàm call api xóa thông tin người dùng
   const handleDeleteStudent = async (record) => {
@@ -241,6 +260,7 @@ function ContentHomeStudent(props) {
     getStudent();
   };
 
+  // Hàm call api add và update thông tin sinh viên
   const onFinish = async (values) => {
     if (displayBtnAdd) {
       const dataStudent = await getDataStudent();
@@ -272,6 +292,7 @@ function ContentHomeStudent(props) {
     }
   };
 
+  // Hàm hiển thị lỗi khi add và update không thành công
   const onFinishFailed = async (errorInfo) => {
     if (displayBtnAdd) {
       error("Create student failed");
@@ -280,7 +301,16 @@ function ContentHomeStudent(props) {
     }
   };
 
-  console.log(students);
+  // Hàm chuyển đổi từ date
+  const convertDate = (value) => {
+    const date = new Date(value);
+    const day = date.getDate()
+    const mounth = date.getMonth() + 1
+    const year = date.getFullYear()
+    
+    return day + '/' + mounth + '/' + year
+  }
+
 
   // Render dữ liệu ra màn hình
   return (
@@ -313,6 +343,7 @@ function ContentHomeStudent(props) {
           style={{ width: 200, marginLeft: "20px" }}
           onChange={handleChangeSelectionStatus}
         >
+          <Option value="all">All</Option>
           <Option value="Studying">Studying</Option>
           <Option value="Studyed">Studyed</Option>
         </Select>
@@ -321,6 +352,7 @@ function ContentHomeStudent(props) {
           style={{ width: 200, marginLeft: "20px" }}
           onChange={handleChangeSelectionClass}
         >
+          <Option value="all">All</Option>
           <Option value="D101">D101</Option>
           <Option value="D115">D115</Option>
           <Option value="D112">D112</Option>
@@ -591,8 +623,64 @@ function ContentHomeStudent(props) {
           </Form.Item>
         </Form>
       </Modal>
+
+
+      {/* Modal hiển thị thông tin học sinh */}
+      <Modal
+        title="Student Infomation"
+        visible={visibleFormShowInfo}
+        onCancel={handleCancelFormShowInfo}
+        cancelButtonProps={{ style: { display: "none" } }}
+        okButtonProps={{ style: { display: "none" } }}
+        forceRender
+      >
+        <div className='modal_display_info_stu'>
+          <div>
+              <div className='modal_display_info_stu_item'>
+                <p>Student Code: </p>
+                <p className='modal_display_info_stu_item_value'>{ inforStudent.code }</p>
+              </div>
+              <div className='modal_display_info_stu_item'>
+                <p>Name: </p>
+                <p className='modal_display_info_stu_item_value'>{ inforStudent.username }</p>
+              </div>
+              <div className='modal_display_info_stu_item'>
+                <p>Gender: </p>
+                <p className='modal_display_info_stu_item_value'>{ inforStudent.gender }</p>
+              </div>
+              <div className='modal_display_info_stu_item'>
+                <p>Date of birth: </p>
+                <p className='modal_display_info_stu_item_value'>{ convertDate(inforStudent.dateOfBirth) }</p>
+              </div>
+              <div className='modal_display_info_stu_item'>
+                <p>Hometouwn: </p>
+                <p className='modal_display_info_stu_item_value'>{ inforStudent.hometouwn }</p>
+              </div>
+          </div>
+          <div>
+              <div className='modal_display_info_stu_item'>
+                <p>Class: </p>
+                <p className='modal_display_info_stu_item_value'>{ inforStudent.class }</p>
+              </div>
+              <div className='modal_display_info_stu_item'>
+                <p>Ganeration: </p>
+                <p className='modal_display_info_stu_item_value'>{ inforStudent.ganeration }</p>
+              </div>
+              <div className='modal_display_info_stu_item'>
+                <p>Phone number: </p>
+                <p className='modal_display_info_stu_item_value'>{ inforStudent.phone }</p>
+              </div>
+              <div className='modal_display_info_stu_item'>
+                <p>Status: </p>
+                <p className='modal_display_info_stu_item_value'>{ inforStudent.status }</p>
+              </div>
+              
+          </div>
+        </div>
+      </Modal>
+      
     </div>
   );
-}
+} 
 
 export default ContentHomeStudent;
