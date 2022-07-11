@@ -280,6 +280,8 @@ function ContentHomeStudent(props) {
     }
   };
 
+  console.log(students);
+
   // Render dữ liệu ra màn hình
   return (
     <div>
@@ -514,7 +516,7 @@ function ContentHomeStudent(props) {
                     }),
                   ]}
                 >
-                  <Input placeholder="Phone" type="number" />
+                  <Input placeholder="Phone" type="number"/>
                 </Form.Item>
               </Form.Item>
               <Form.Item>

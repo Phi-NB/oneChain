@@ -2,10 +2,15 @@ import db from "../firebase/config.js";
 import firebase from "firebase/compat/app";
 import 'firebase/compat/database'
 
+const d = new Date();
+
 const getDataStudent = async () => {
   const events = db.collection("student");
   const tempDoc = [];
-  await events.get().then((querySnapshot) => {
+  await events
+  .orderBy("dateJoin", 'asc')
+  .get()
+  .then((querySnapshot) => {
     querySnapshot.forEach((doc) => {
       tempDoc.push({ id: doc.id, ...doc.data() });
     });
@@ -27,6 +32,7 @@ export const addDataStudent = async (data) => {
     username: data.username,
     phone: data.phone,
     status: data.status,
+    dateJoin: d.toString(),
   });
 };
 
@@ -44,6 +50,7 @@ export const updateDataStudent = async (data, id) => {
     username: data.username,
     phone: data.phone,
     status: data.status,
+    dateJoin: d.toString(),
   });
 };
 
@@ -61,7 +68,6 @@ export const filterStudent = async (key, value) => {
     .catch((error) => {
       console.log("Error getting documents: ", error);
     });
-
   return tempDoc;
 };
 
