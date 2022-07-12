@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { Typography, message } from "antd";
 import "antd/dist/antd.css"; // or 'antd/dist/antd.less'
 import "../../styles/Login.scss";
@@ -6,6 +6,7 @@ import { useNavigate } from "react-router";
 import { Formik, Field, Form } from "formik";
 import * as Yup from "yup";
 import db from "../../firebase/config";
+import Loading from '../../components/Loading.jsx'
 
 const { Title } = Typography;
 
@@ -19,6 +20,17 @@ const error = () => {
 
 function Login(props) {
   const navigate = useNavigate();
+  const [isLoading, setIsLoading] = useState(true)
+
+  useEffect(() => {
+    setTimeout(() => {
+      setIsLoading(false)
+    }, 1000)
+  })
+
+  if(isLoading) {
+    return <Loading />
+  }
 
   const DisplayingErrorMessagesSchema = Yup.object().shape({
     code: Yup.string()

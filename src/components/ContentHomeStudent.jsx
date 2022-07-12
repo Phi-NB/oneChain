@@ -30,6 +30,7 @@ import getDataStudent, {
   searchStudent
 } from "../services/student";
 import moment from "moment";
+import Loading from '../components/Loading.jsx'
 
 const { Title } = Typography;
 const { Search } = Input;
@@ -64,20 +65,28 @@ function ContentHomeStudent(props) {
   const [idStudentUpdate, setIdStudentUpdate] = useState("");
   const [collapsed, setCollapsed] = useState(true);
   const [inforStudent, setInforStudent] = useState({});
+  const [isLoading, setIsLoading] = useState(true)
 
   const [form] = Form.useForm();
 
   // Khởi chạy dữ liệu
   useEffect(() => {
-    getStudent();
+    try {
+      getStudent();
+    } catch {
+
+    } finally {
+
+    }
   }, []);
 
+  
   // Hàm lấy dữ liệu
   const getStudent = async () => {
     const data = await getDataStudent();
     setStudents(data);
   };
-
+  
   // Hàm chuyển đổi dữ liệu trước khi thêm vào bảng
   const data = students.map((student, index) => {
     return {
@@ -98,6 +107,15 @@ function ContentHomeStudent(props) {
     };
   });
 
+  if(data.length === 0) {
+    setTimeout(() => {
+      setIsLoading(false);
+    }, 2000)
+  }
+
+  if(isLoading) {
+    return <Loading />
+  }
 
   const columns = [
     {
@@ -180,7 +198,6 @@ function ContentHomeStudent(props) {
 
   // Hàm lấy id và hiển thị form update
   const handleUpdateStudent = (record) => {
-    console.log(record);
     setTitleForm("Update imformation student");
     setVisible(true);
     setDisplayBtnAdd(false);

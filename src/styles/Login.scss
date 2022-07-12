@@ -57,6 +57,9 @@ body {
         background-color: $color-dark;
         color: #fff;
         cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
     }
 
     .form-navigate {
@@ -70,4 +73,12 @@ body {
         }
     }
 
+}
+.group_btn_regis {
+    display: flex;
+    justify-content: space-between;
+    flex-direction: row;
+    button {
+        width: 45%;
+    }
 }

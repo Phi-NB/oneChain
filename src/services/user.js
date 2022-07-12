@@ -1,18 +1,34 @@
-import db from '../firebase/config.js'
+import db from "../firebase/config.js";
 
-const getDataUser = () => {
-    const events = db.collection('user')
-    events.get().then((querySnapshot) => {
-        const tempDoc = []
-        querySnapshot.forEach((doc) => {
-           tempDoc.push({ id: doc.id, ...doc.data() })
-        })
+const d = new Date();
 
-        return tempDoc
-    })
-}
+const getDataUser = async () => {
+  const events = db.collection("user");
+  const tempDoc = [];
+  await events.get().then((querySnapshot) => {
+    querySnapshot.forEach((doc) => {
+      tempDoc.push({ id: doc.id, ...doc.data() });
+    });
+  });
+  return tempDoc;
+};
 
+export const addDataUser = async (data) => {
+  await db.collection("user").doc().set({
+    code: data.code,
+    email: data.email,
+    password: data.password,
+    dateJoin: d.toString(),
+  });
+};
 
-console.log(getDataUser);
+export const updateDataUser = async (data, id) => {
+  await db.collection("user").doc(id).set({
+    code: data.code,
+    email: data.email,
+    password: data.password,
+    dateJoin: d.toString(),
+  });
+};
 
-export default getDataUser
+export default getDataUser;

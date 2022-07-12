@@ -108,3 +108,18 @@ $color-primary: #89609e;
     background-color: $color-primary;
 }
 
+.ant-btn-primary {
+    background-color: #735185;
+    border-radius: 2px;
+    border: none;
+    &:hover, &:focus {
+        background-color: #9d85a9;
+    }
+}
+
+.group_btn_edit_profile {
+    display: flex;
+    justify-content: flex-end;
+    margin: 8px 0;
+
+}

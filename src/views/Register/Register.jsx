@@ -1,11 +1,14 @@
-import React from "react";
-import { Typography, message } from "antd";
+import React, { useState, useEffect } from "react";
+import { Typography, message, Button, Input, Form } from "antd";
 import "antd/dist/antd.css"; // or 'antd/dist/antd.less'
 import "../../styles/Login.scss";
 import { useNavigate } from "react-router";
-import { Formik, Field, Form } from "formik";
-import * as Yup from "yup";
-import db from "../../firebase/config";
+import db from "../../firebase/config.js";
+import Loading from "../../components/Loading.jsx";
+import getDataUser, {
+  addDataUser,
+  updateDataUser,
+} from "../../services/user.js";
 
 const { Title } = Typography;
 
@@ -19,59 +22,85 @@ const error = (mes) => {
 
 function Register(props) {
   const navigate = useNavigate();
+  const [isLoading, setIsLoading] = useState(true);
+  const [page1, setPage1] = useState(true);
+  const [page2, setPage2] = useState(false);
+  const [valuePage1, setValuePage1] = useState({});
 
-  // validate các trường trong form
-  const DisplayingErrorMessagesSchema = Yup.object().shape({
-    code: Yup.string()
-      .min(7, "Code length 7-20")
-      .max(20, "Code length 7-20")
-      .required("Required"),
-    password: Yup.string()
-      .min(8, "Password length 8-20")
-      .max(20, "Password length 8-20")
-      .required("Required"),
-    confirmPassword: Yup.string().oneOf(
-      [Yup.ref("password"), null],
-      "Passwords must match"
-    ),
-    email: Yup.string().email("Invalid email address").required("Required"),
-    sex: Yup.string().required("Required"),
+  useEffect(() => {
+    setTimeout(() => {
+      setIsLoading(false);
+    }, 1000);
   });
 
-  // đăng ký tài khoản
-  const submitRegister = async (data) => {
-    const events = db.collection("user");
-    await events.get().then((querySnapshot) => {
-      const tempDoc = [];
-      querySnapshot.forEach((doc) => {
-        tempDoc.push({ id: doc.id, ...doc.data() });
-      });
-      const user = tempDoc.filter((doc) => {
-        return doc.code === data.code;
-      });
-      console.log(user);
+  if (isLoading) {
+    return <Loading />;
+  }
 
-      if (user.length === 0) {
-        if (data) {
-          db.collection("user").add({
-            code: data.code,
-            sex: data.sex,
-            email: data.email,
-            password: data.password,
-          });
-          success();
-        } else {
-          error("Create account failed");
-        }
-      } else {
-        error("Account already exists");
-      }
+  // đăng ký tài khoản
+  const addAccount = async (data) => {
+    const require = await getDataUser();
+
+    console.log(require);
+
+    const user = require.filter((doc) => {
+      return doc.code === data.code || doc.email === data.email;
     });
+
+    if (user.length === 0) {
+      if (data) {
+        try {
+          await addDataUser(data);
+
+        } catch {
+
+        }
+        success();
+        navigate("/login");
+      } else {
+        error("Create account failed");
+      }
+    } else {
+      error("Code or email already exists");
+    }
   };
 
   // điều hướng về trang login
   const navigateLogin = () => {
     navigate("/login");
+  };
+
+  const navigatePage2 = () => {
+    setPage1(false);
+    setPage2(true);
+  };
+
+  const navigatePage1 = () => {
+    setPage1(true);
+    setPage2(false);
+  };
+  const onFinish = (value) => {
+    setValuePage1({ ...value });
+    navigatePage2();
+    console.log(value);
+  };
+
+  const onFinish2 = async (value) => {
+    if (value.password !== value.confirmPassword) {
+      error("Password does not match Confirm Password");
+    } else {
+      const dataRequest = { ...value, ...valuePage1 };
+      console.log(dataRequest);
+      await addAccount(dataRequest);
+    }
+  };
+
+  const onFinishFailed = (value) => {
+    error("Please enter all fields");
+  };
+
+  const backToPage1 = () => {
+    navigatePage1();
   };
 
   // trả lại JSX
@@ -80,87 +109,155 @@ function Register(props) {
       <Title className="title" level={2}>
         REGISTER
       </Title>
-      <Formik
-        validationSchema={DisplayingErrorMessagesSchema}
-        initialValues={{
-          code: "",
-          password: "",
-          confirmPassword: "",
-          sex: "",
-          email: "",
-        }}
-        onSubmit={submitRegister}
-      >
-        {({ errors, touched }) => (
-          <Form>
-            <div className="form_control">
-              <p>Code</p>
-              <Field name="code" type="text" placeholder="Code" />
-              {touched.code && errors.code && (
-                <div className="message_erro">{errors.code}</div>
-              )}
-            </div>
-            <div className="form_control">
-              <p>Sex</p>
-              <div className="form_control_sex">
-                <label>
-                  <span>Male</span>
-                  <Field
-                    type="radio"
-                    name="sex"
-                    value="Nam"
-                    style={{ marginLeft: 4 }}
-                  />
-                </label>
-                <label style={{ marginLeft: 16 }}>
-                  <span>Female</span>
-                  <Field
-                    type="radio"
-                    name="sex"
-                    value="Nữ"
-                    style={{ marginLeft: 4 }}
-                  />
-                </label>
-              </div>
-              {touched.sex && errors.sex && (
-                <div className="message_erro">{errors.sex}</div>
-              )}
-            </div>
-            <div className="form_control">
-              <p>Email</p>
-              <Field name="email" type="email" placeholder="Email" />
-              {touched.email && errors.email && (
-                <div className="message_erro">{errors.email}</div>
-              )}
-            </div>
-            <div className="form_control">
-              <p>Password</p>
-              <Field name="password" type="password" placeholder="Password" />
-              {touched.password && errors.password && (
-                <div className="message_erro">{errors.password}</div>
-              )}
-            </div>
-            <div className="form_control">
-              <p>Confirm Password</p>
-              <Field
-                name="confirmPassword"
-                type="password"
-                placeholder="Confirm password"
-              />
-              {touched.confirmPassword && errors.confirmPassword && (
-                <div className="message_erro">{errors.confirmPassword}</div>
-              )}
-            </div>
-            <button type="submit">Register</button>
-            <div className="form-navigate">
-              <span>Do not have an account?</span>
-              <span onClick={navigateLogin} className="register">
-                Login
-              </span>
-            </div>
-          </Form>
-        )}
-      </Formik>
+      {page1 && (
+        <Form
+          name="page1"
+          labelCol={{
+            span: 8,
+          }}
+          wrapperCol={{
+            span: 16,
+          }}
+          initialValues={{
+            remember: true,
+          }}
+          onFinish={onFinish}
+          onFinishFailed={onFinishFailed}
+          autoComplete="off"
+        >
+          <Form.Item>
+            <Title level={5}>Code</Title>
+            <Form.Item
+              name="code"
+              rules={[
+                () => ({
+                  validator(rule, value = "") {
+                    if (value.length > 0 && value.length < 7) {
+                      return Promise.reject("Code length 7-20");
+                    } else if (value.length === 0) {
+                      return Promise.reject("Require");
+                    } else {
+                      return Promise.resolve();
+                    }
+                  },
+                }),
+              ]}
+            >
+              <Input placeholder="Code" />
+            </Form.Item>
+          </Form.Item>
+
+          <Form.Item>
+            <Title level={5}>Email</Title>
+            <Form.Item
+              name="email"
+              rules={[
+                {
+                  type: "email",
+                  message: "The input is not valid E-mail!",
+                },
+                {
+                  required: true,
+                  message: "Please input your E-mail!",
+                },
+              ]}
+            >
+              <Input placeholder="Email" type="email" />
+            </Form.Item>
+          </Form.Item>
+
+          <Form.Item>
+            <Button type="primary" htmlType="submit">
+              Next
+            </Button>
+          </Form.Item>
+
+          <div className="form-navigate">
+            <span>Do not have an account?</span>
+            <span onClick={navigateLogin} className="register">
+              Login
+            </span>
+          </div>
+        </Form>
+      )}
+
+      {page2 && (
+        <Form
+          name="page2"
+          labelCol={{
+            span: 8,
+          }}
+          wrapperCol={{
+            span: 16,
+          }}
+          initialValues={{
+            remember: true,
+          }}
+          onFinish={onFinish2}
+          onFinishFailed={onFinishFailed}
+          autoComplete="off"
+        >
+          <Form.Item>
+            <Title level={5}>Password</Title>
+            <Form.Item
+              name="password"
+              rules={[
+                () => ({
+                  validator(rule, value = "") {
+                    if (value.length > 0 && value.length < 7) {
+                      return Promise.reject("Code length 7-20");
+                    } else if (value.length === 0) {
+                      return Promise.reject("Require");
+                    } else {
+                      return Promise.resolve();
+                    }
+                  },
+                }),
+              ]}
+            >
+              <Input placeholder="Password" type="password" />
+            </Form.Item>
+          </Form.Item>
+
+          <Form.Item>
+            <Title level={5}>Confirm Password</Title>
+            <Form.Item
+              name="confirmPassword"
+              rules={[
+                () => ({
+                  validator(rule, value = "") {
+                    if (value.length > 0 && value.length < 7) {
+                      return Promise.reject("Code length 7-20");
+                    } else if (value.length === 0) {
+                      return Promise.reject("Require");
+                    } else {
+                      return Promise.resolve();
+                    }
+                  },
+                }),
+              ]}
+            >
+              <Input placeholder="Confirm Password" type="password" />
+            </Form.Item>
+          </Form.Item>
+
+          <div className="group_btn_regis">
+            <Button onClick={backToPage1} type="primary">
+              Back
+            </Button>
+            <Button type="primary" htmlType="submit">
+              Register
+            </Button>
+          </div>
+
+          <div className="form-navigate">
+            <span>Do not have an account?</span>
+            <span onClick={navigateLogin} className="register">
+              Login
+            </span>
+          </div>
+        </Form>
+      )}
     </div>
   );
 }
