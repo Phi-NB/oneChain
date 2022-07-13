@@ -26,7 +26,12 @@ export const updateDataUser = async (data, id) => {
   await db.collection("user").doc(id).set({
     code: data.code,
     email: data.email,
-    password: data.password,
+    username: data.username,
+    gender: data.gender,
+    dateOfBirth: (data.dateOfBirth._d).toString(),
+    hometouwn: data.hometouwn,
+    citizenId: data.citizenId,
+    phone: data.phone,
     dateJoin: d.toString(),
   });
 };

@@ -1,4 +1,8 @@
-import { UserOutlined, LogoutOutlined } from "@ant-design/icons";
+import {
+  UserOutlined,
+  LogoutOutlined,
+  UploadOutlined,
+} from "@ant-design/icons";
 import {
   Layout,
   Menu,
@@ -11,11 +15,13 @@ import {
   DatePicker,
   Select,
   Button,
+  Upload,
+  message,
 } from "antd";
+import ImgCrop from "antd-img-crop";
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router";
 import "../../styles/Home.scss";
-import db from "../../firebase/config.js";
 import ContentHomeStudent from "../../components/ContentHomeStudent.jsx";
 import { useCookies } from "react-cookie";
 import getDataUsers from "../../services/user.js";
@@ -24,15 +30,15 @@ const { Sider, Content } = Layout;
 const { Title } = Typography;
 const { Option } = Select;
 
-const events = db.collection("user");
 function Home(props) {
   const navigate = useNavigate();
   const [user, setUser] = useState([]);
-  const [collapsed, setCollapsed] = useState(true);
+  const [collapsed, setCollapsed] = useState(false);
   const [cookieUser, setCookieUser] = useCookies(["user"]);
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [isModalVisibleEditProf, setIsModalVisibleEditProf] = useState(false);
   const [form] = Form.useForm();
+  const [fileList, setFileList] = useState([]);
 
   useEffect(() => {
     getDataUser();
@@ -57,6 +63,7 @@ function Home(props) {
 
   const handleCancel = () => {
     setIsModalVisible(false);
+    setIsModalVisibleEditProf(false);
   };
 
   const showInfoUser = () => {
@@ -72,13 +79,42 @@ function Home(props) {
     return day + "/" + mounth + "/" + year;
   };
 
-  const onFinish = () => {
+  const onFinish = () => {};
 
-  }
+  const onFinishFailed = () => {};
 
-  const onFinishFailed = () => {
+  const showEditPro = () => {
+    setIsModalVisibleEditProf(true);
+    setIsModalVisible(false);
+    form.setFieldsValue({
+      code: user[0].code,
+      email: user[0].email, 
+    });
+  };
 
-  }
+  const onPreviewUpload = async (file) => {
+    let src = file.url;
+
+    if (!src) {
+      src = await new Promise((resolve) => {
+        const reader = new FileReader();
+        reader.readAsDataURL(file.originFileObj);
+
+        reader.onload = () => resolve(reader.result);
+      });
+    }
+
+    const image = new Image();
+    image.src = src;
+    const imgWindow = window.open(src);
+    imgWindow?.document.write(image.outerHTML);
+    console.log(src);
+  };
+
+  const onChangeUpload = ({ fileList: newFileList }) => {
+    console.log(newFileList);
+    setFileList(newFileList);
+  };
 
   return (
     <Layout>
@@ -149,7 +185,10 @@ function Home(props) {
           </div>
         </div>
         <div className="group_btn_edit_profile">
-          <button className="btn_edit_profile ant-btn-primary ant-btn">
+          <button
+            onClick={showEditPro}
+            className="btn_edit_profile ant-btn-primary ant-btn"
+          >
             Edit Profile
           </button>
         </div>
@@ -194,7 +233,40 @@ function Home(props) {
                     }),
                   ]}
                 >
-                  <Input placeholder="Student Code" />
+                  <Input placeholder="Code" />
+                </Form.Item>
+              </Form.Item>
+              {/* <Form.Item>
+                <Title level={5}>Avatart</Title>
+                <Form.Item name="code">
+                  <ImgCrop rotate>
+                    <Upload
+                      listType="picture-card"
+                      fileList={fileList}
+                      onChange={onChangeUpload}
+                      onPreview={onPreviewUpload}
+                    >
+                      {fileList.length < 5 && "+ Upload"}
+                    </Upload>
+                  </ImgCrop>
+                </Form.Item>
+              </Form.Item> */}
+              <Form.Item>
+                <Title level={5}>Email</Title>
+                <Form.Item
+                  name="email"
+                  rules={[
+                    {
+                      type: "email",
+                      message: "The input is not valid E-mail!",
+                    },
+                    {
+                      required: true,
+                      message: "Please input your E-mail!",
+                    },
+                  ]}
+                >
+                  <Input placeholder="Email" type="email" />
                 </Form.Item>
               </Form.Item>
               <Form.Item>
@@ -219,24 +291,6 @@ function Home(props) {
                 </Form.Item>
               </Form.Item>
               <Form.Item>
-                <Title level={5}>Email</Title>
-                <Form.Item
-                  name="email"
-                  rules={[
-                    {
-                      type: "email",
-                      message: "The input is not valid E-mail!",
-                    },
-                    {
-                      required: true,
-                      message: "Please input your E-mail!",
-                    },
-                  ]}
-                >
-                  <Input placeholder="Email" type="email" />
-                </Form.Item>
-              </Form.Item>
-              <Form.Item>
                 <Title level={5}>Gender</Title>
                 <Form.Item
                   name="gender"
@@ -251,20 +305,8 @@ function Home(props) {
                   </Radio.Group>
                 </Form.Item>
               </Form.Item>
-              <Form.Item>
-                <Title level={5}>Status</Title>
-                <Form.Item
-                  name="status"
-                  rules={[
-                    { required: true, message: "Please select an option!" },
-                  ]}
-                >
-                  <Radio.Group>
-                    <Radio value="Studying">Studying</Radio>
-                    <Radio value="Studyed">Studyed</Radio>
-                  </Radio.Group>
-                </Form.Item>
-              </Form.Item>
+            </div>
+            <div style={{ width: "45%" }}>
               <Form.Item>
                 <Title level={5}>Date of birth</Title>
                 <Form.Item
@@ -276,8 +318,6 @@ function Home(props) {
                   <DatePicker format={"YYYY/MM/DD"} />
                 </Form.Item>
               </Form.Item>
-            </div>
-            <div style={{ width: "45%" }}>
               <Form.Item>
                 <Title level={5}>Hometouwn</Title>
                 <Form.Item
@@ -339,55 +379,6 @@ function Home(props) {
                   ]}
                 >
                   <Input placeholder="Phone" type="number" />
-                </Form.Item>
-              </Form.Item>
-              <Form.Item>
-                <Title level={5}>Specialized</Title>
-                <Form.Item
-                  name="specialized"
-                  rules={[
-                    { required: true, message: "Please select an option!" },
-                  ]}
-                >
-                  <Select>
-                    <Option value="Information Technology">
-                      Information Technology
-                    </Option>
-                    <Option value="Medicine">Medicine</Option>
-                    <Option value="Travel">Travel</Option>
-                  </Select>
-                </Form.Item>
-              </Form.Item>
-              <Form.Item>
-                <Title level={5}>Class</Title>
-                <Form.Item
-                  name="class"
-                  rules={[
-                    { required: true, message: "Please select an option!" },
-                  ]}
-                >
-                  <Select>
-                    <Option value="D101">D101</Option>
-                    <Option value="D115">D115</Option>
-                    <Option value="D112">D112</Option>
-                    <Option value="D118">D118</Option>
-                  </Select>
-                </Form.Item>
-              </Form.Item>
-              <Form.Item>
-                <Title level={5}>Ganeration</Title>
-                <Form.Item
-                  name="ganeration"
-                  rules={[
-                    { required: true, message: "Please select an option!" },
-                  ]}
-                >
-                  <Select>
-                    <Option value="11">11</Option>
-                    <Option value="12">12</Option>
-                    <Option value="13">13</Option>
-                    <Option value="14">14</Option>
-                  </Select>
                 </Form.Item>
               </Form.Item>
             </div>
