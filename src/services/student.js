@@ -8,17 +8,17 @@ const getDataStudent = async () => {
   const events = db.collection("student");
   const tempDoc = [];
   await events
-  .orderBy("dateJoin", 'asc')
+  .orderBy("dateJoin", 'desc')
   .get()
   .then((querySnapshot) => {
     querySnapshot.forEach((doc) => {
       tempDoc.push({ id: doc.id, ...doc.data() });
     });
   });
-  return tempDoc.sort();
+  return tempDoc;
 };
 
-export const addDataStudent = async (data) => {
+export const addDataStudent = async (data, image) => {
   await db.collection("student").doc().set({
     citizenId: data.citizenId,
     class: data.class,
@@ -33,15 +33,16 @@ export const addDataStudent = async (data) => {
     phone: data.phone,
     status: data.status,
     dateJoin: d.toString(),
+    image: image,
   });
 };
 
-export const updateDataStudent = async (data, id) => {
+export const updateDataStudent = async (data, id, image) => {
   await db.collection("student").doc(id).update({
     citizenId: data.citizenId,
     class: data.class,
     code: data.code,
-    dateOfBirth: data.dateOfBirth._d,
+    dateOfBirth: typeof data.dateOfBirth === 'string' ?  data.dateOfBirth : (data.dateOfBirth._d).toString(),
     email: data.email,
     ganeration: data.ganeration,
     gender: data.gender,
@@ -50,7 +51,7 @@ export const updateDataStudent = async (data, id) => {
     username: data.username,
     phone: data.phone,
     status: data.status,
-    dateJoin: d.toString(),
+    image: image,
   });
 };
 

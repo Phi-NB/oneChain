@@ -12,6 +12,14 @@ import {
   Radio,
   DatePicker,
   message,
+  Card,
+  Col,
+  Row,
+  Avatar,
+  Dropdown,
+  Menu,
+  Upload,
+  Spin,
 } from "antd";
 import {
   DeleteOutlined,
@@ -20,6 +28,9 @@ import {
   MenuUnfoldOutlined,
   MenuFoldOutlined,
   EyeOutlined,
+  UserOutlined,
+  MoreOutlined,
+  EllipsisOutlined,
 } from "@ant-design/icons";
 import "../styles/ContentStudentHome.scss";
 import getDataStudent, {
@@ -27,15 +38,19 @@ import getDataStudent, {
   deleteDataStudent,
   updateDataStudent,
   filterStudent,
-  searchStudent
+  searchStudent,
 } from "../services/student";
 import moment from "moment";
-import Loading from '../components/Loading.jsx'
+import Loading from "../components/Loading.jsx";
+import ModalDisplayInforStudent from "./ModalDisplayInforStudent";
+import ModalAddUpdateInforStudent from "./ModalAddUpdateInforStudent";
+import { storage } from "../firebase/config";
 
 const { Title } = Typography;
 const { Search } = Input;
 const { Option } = Select;
 const { Header } = Layout;
+const { Meta } = Card;
 
 const success = (mess) => {
   message.success(mess);
@@ -43,15 +58,6 @@ const success = (mess) => {
 
 const error = (mess) => {
   message.error(mess);
-};
-
-const layout = {
-  labelCol: {
-    span: 4,
-  },
-  wrapperCol: {
-    span: 16,
-  },
 };
 
 function ContentHomeStudent(props) {
@@ -65,28 +71,37 @@ function ContentHomeStudent(props) {
   const [idStudentUpdate, setIdStudentUpdate] = useState("");
   const [collapsed, setCollapsed] = useState(true);
   const [inforStudent, setInforStudent] = useState({});
-  const [isLoading, setIsLoading] = useState(true)
-
+  const [isLoading, setIsLoading] = useState(true);
+  const [displayTable, setDisplayTable] = useState(false);
+  const [displayGrid, setDisplayTGrid] = useState(true);
+  const [urlImage, setUrlImage] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [valueSelectStatus, setValueStatus] = useState("");
+  const [valueSelectClass, setValueClass] = useState("");
   const [form] = Form.useForm();
+
+  const uploadButton = (
+    <div className="editImg">
+      <EditOutlined />
+      Edit
+    </div>
+  );
 
   // Khởi chạy dữ liệu
   useEffect(() => {
     try {
       getStudent();
     } catch {
-
     } finally {
-
     }
   }, []);
 
-  
   // Hàm lấy dữ liệu
   const getStudent = async () => {
     const data = await getDataStudent();
     setStudents(data);
   };
-  
+
   // Hàm chuyển đổi dữ liệu trước khi thêm vào bảng
   const data = students.map((student, index) => {
     return {
@@ -104,17 +119,18 @@ function ContentHomeStudent(props) {
       username: student.username,
       phone: student.phone,
       status: student.status,
+      image: student.image,
     };
   });
 
-  if(data.length === 0) {
+  if (data.length === 0) {
     setTimeout(() => {
       setIsLoading(false);
-    }, 2000)
+    }, 2000);
   }
 
-  if(isLoading) {
-    return <Loading />
+  if (isLoading) {
+    return <Loading />;
   }
 
   const columns = [
@@ -122,6 +138,7 @@ function ContentHomeStudent(props) {
       title: "Index",
       dataIndex: "key",
       key: "key",
+      align: "center",
     },
     {
       title: "Student Code",
@@ -137,11 +154,13 @@ function ContentHomeStudent(props) {
       title: "Class",
       dataIndex: "class",
       key: "class",
+      align: "center",
     },
     {
       title: "Specialized",
       dataIndex: "specialized",
       key: "specialized",
+      align: "center",
     },
     {
       title: "Status",
@@ -156,6 +175,7 @@ function ContentHomeStudent(props) {
     {
       title: "Action",
       key: "action",
+      align: "center",
       render: (_, record) => (
         <div>
           <Popconfirm
@@ -201,6 +221,7 @@ function ContentHomeStudent(props) {
     setTitleForm("Update imformation student");
     setVisible(true);
     setDisplayBtnAdd(false);
+    setIdStudentUpdate(record.id);
     form.setFieldsValue({
       citizenId: record.citizenId,
       class: record.class,
@@ -233,37 +254,40 @@ function ContentHomeStudent(props) {
   // Hàm đóng modal hiển thị thông tin sinh viên
   const handleCancelFormShowInfo = () => {
     setVisibleFormShowInfo(false);
-  }
+  };
 
   const showProfileStudent = (record) => {
     setVisibleFormShowInfo(true);
     setInforStudent(record);
-  }
+  };
 
   // Hàm tìm kiếm theo mã sinh viên
   const onSearch = async (value) => {
     const students = await getDataStudent();
-    const result = students.filter(student => {
-      return student.code.includes(value)
-    })
-    setStudents(result)
+    const result = students.filter((student) => {
+      return student.code.includes(value);
+    });
+    setStudents(result);
   };
 
   // Hàm lọc sinh viên theo trạng thái
 
   const handleChangeSelectionStatus = async (value) => {
-    if(value === 'all') {
-      getStudent()
+    console.log("status", value);
+    if (value === "all") {
+      getStudent();
     } else {
       const result = await filterStudent("status", value);
+
       setStudents(result);
     }
   };
 
   // Hàm lọc sinh viên theo lớp
   const handleChangeSelectionClass = async (value) => {
-    if(value === 'all') {
-      getStudent()
+    console.log("class", value);
+    if (value === "all") {
+      getStudent();
     } else {
       const result = await filterStudent("class", value);
       setStudents(result);
@@ -277,72 +301,53 @@ function ContentHomeStudent(props) {
     getStudent();
   };
 
-  // Hàm call api add và update thông tin sinh viên
-  const onFinish = async (values) => {
-    if (displayBtnAdd) {
-      const dataStudent = await getDataStudent();
-      const user = dataStudent.filter((element) => {
-        return element.code === values.code || element.email === values.email;
-      });
-      if (user.length === 0) {
-        await addDataStudent(values);
-        form.resetFields();
-        success("Create student success");
-        getStudent();
-      } else {
-        error("Code and email no duplicates");
-      }
-    } else {
-      const dataStudent = await getDataStudent();
-      const user = dataStudent.filter((element) => {
-        return (element.code === values.code || element.email === values.email) ;
-      });
-
-      if (user.length === 1) {
-        await updateDataStudent(values, idStudentUpdate);
-        form.resetFields();
-        success("Update student success");
-        getStudent();
-      } else {
-        error("Student code or email already exist");
-      }
-    }
+  const showGridView = () => {
+    setDisplayTGrid(true);
+    setDisplayTable(false);
   };
 
-  // Hàm hiển thị lỗi khi add và update không thành công
-  const onFinishFailed = async (errorInfo) => {
-    if (displayBtnAdd) {
-      error("Create student failed");
-    } else {
-      error("Update student failed");
-    }
+  const showTableView = () => {
+    setDisplayTGrid(false);
+    setDisplayTable(true);
   };
 
-  // Hàm chuyển đổi từ date
-  const convertDate = (value) => {
-    const date = new Date(value);
-    const day = date.getDate()
-    const mounth = date.getMonth() + 1
-    const year = date.getFullYear()
-    
-    return day + '/' + mounth + '/' + year
-  }
-
-
+  const confirmDeleteStudentGridView = async (element) => {
+    await deleteDataStudent(element.id);
+    success("Delete student successfully");
+    getStudent();
+  };
+  const menu = (element) => (
+    <Menu
+      items={[
+        {
+          label: (
+            <span onClick={() => handleUpdateStudent(element)}>Update</span>
+          ),
+          key: "1",
+        },
+        {
+          label: (
+            <Popconfirm
+              title="Title"
+              onConfirm={() => confirmDeleteStudentGridView(element)}
+            >
+              Remove
+            </Popconfirm>
+          ),
+          key: "3",
+        },
+      ]}
+    />
+  );
   // Render dữ liệu ra màn hình
   return (
     <div>
       <Header className="site-layout-background">
-        {React.createElement(
-          collapsed ? MenuUnfoldOutlined : MenuFoldOutlined,
-          {
-            className: "trigger",
-            onClick: () => {
-              props.collapsed(collapsed);
-              setCollapsed(!collapsed);
-            },
-          }
-        )}
+        <div className="site-layout-header-title">
+          <Title style={{ color: "#fff" }} level={3}>
+            STUDENT MANAGEMENT
+          </Title>
+        </div>
         <Button className="add-student" onClick={handleAdd}>
           <UserAddOutlined />
           Add Student
@@ -353,351 +358,164 @@ function ContentHomeStudent(props) {
           placeholder="Enter student code"
           onSearch={onSearch}
           enterButton
-          style={{ width: "300px" }}
+          className="input-search"
         />
-        <Select
-          defaultValue="Choose status"
-          style={{ width: 200, marginLeft: "20px" }}
-          onChange={handleChangeSelectionStatus}
+        <div className="input-groups-select">
+          <Select
+            defaultValue="Choose status"
+            onChange={handleChangeSelectionStatus}
+            className="input-Select"
+          >
+            <Option value="all">All</Option>
+            <Option value="Studying">Studying</Option>
+            <Option value="Studyed">Studyed</Option>
+          </Select>
+          <Select
+            defaultValue="Choose class"
+            onChange={handleChangeSelectionClass}
+            className="input-Select"
+          >
+            <Option value="all">All</Option>
+            <Option value="D101">D101</Option>
+            <Option value="D115">D115</Option>
+            <Option value="D112">D112</Option>
+            <Option value="D118">D118</Option>
+          </Select>
+        </div>
+      </div>
+      <div className='groupsBtn-tranfer-view'>
+        <Button
+          onClick={showGridView}
+          type="primary"
+          className="btn_add_up_stu"
         >
-          <Option value="all">All</Option>
-          <Option value="Studying">Studying</Option>
-          <Option value="Studyed">Studyed</Option>
-        </Select>
-        <Select
-          defaultValue="Choose class"
-          style={{ width: 200, marginLeft: "20px" }}
-          onChange={handleChangeSelectionClass}
+          View list as grid
+        </Button>
+        <Button
+          onClick={showTableView}
+          style={{ marginLeft: 20 }}
+          type="primary"
+          className="btn_add_up_stu"
         >
-          <Option value="all">All</Option>
-          <Option value="D101">D101</Option>
-          <Option value="D115">D115</Option>
-          <Option value="D112">D112</Option>
-          <Option value="D118">D118</Option>
-        </Select>
+          View list as table
+        </Button>
       </div>
 
       {/* Bảng render thông tin các học sinh */}
 
-      <Table columns={columns} dataSource={data} pagination={false} />
+      {displayTable && (
+        <Table columns={columns} dataSource={data} pagination={false} />
+      )}
+
+      {displayGrid && (
+        <div className="site-card-wrapper">
+          <Row gutter={42} justify="start">
+            {data.map((element, index) => {
+              return (
+                <Col
+                  xs={{ span: 24 }}
+                  xl={{ span: 4 }}
+                  lg={{ span: 8 }}
+                  md={{ span: 12 }}
+                  key={index}
+                >
+                  <Card
+                    bordered={false}
+                    style={{ marginBottom: 40, borderRadius: 6 }}
+                  >
+                    <Dropdown
+                      className="drop-down"
+                      overlay={menu(element)}
+                      trigger={["click"]}
+                    >
+                      <MoreOutlined />
+                    </Dropdown>
+
+                    <div style={{ margin: "-14px 0" }}>
+                      <Spin spinning={loading}>
+                        {element.image ? (
+                          <Avatar
+                            size={120}
+                            src={element.image}
+                            style={{ margin: "0 auto", display: "block" }}
+                          />
+                        ) : (
+                          <Avatar
+                            size={120}
+                            icon={<UserOutlined />}
+                            style={{ margin: "0 auto", display: "block" }}
+                          />
+                        )}
+                      </Spin>
+                      {/* <Upload
+                        name="avatar"
+                        listType="picture-card"
+                        className="avatar-uploader"
+                        beforeUpload={beforeUpload}
+                        onChange={handleChange}
+                        customRequest={customUpload}
+                        onClick={() => getStudentUpdate(element)}
+                      >
+                        {image ? (
+                          <img src={image} alt="avatar" />
+                        ) : (
+                          uploadButton
+                        )}
+                      </Upload> */}
+                    </div>
+                    <Title
+                      style={{ textAlign: "center", marginTop: 20 }}
+                      level={5}
+                    >
+                      {element.username}
+                    </Title>
+                    <div className="card_display_info_stu">
+                      <div>
+                        <div className="card_display_info_stu_item">
+                          <p style={{ textAlign: "center", width: "100%" }}>
+                            {element.code}
+                          </p>
+                        </div>
+                      </div>
+                      <div>
+                        <Button
+                          type="primary"
+                          style={{ width: "100%" }}
+                          onClick={() => showProfileStudent(element)}
+                        >
+                          View profile
+                        </Button>
+                      </div>
+                    </div>
+                  </Card>
+                </Col>
+              );
+            })}
+          </Row>
+        </div>
+      )}
 
       {/* Modal thêm và update thồng tin học sinh */}
 
-      <Modal
+      <ModalAddUpdateInforStudent
         title={titleForm}
         visible={visible}
         onCancel={handleCancel}
-        cancelButtonProps={{ style: { display: "none" } }}
-        okButtonProps={{ style: { display: "none" } }}
-        forceRender
-      >
-        <Form
-          {...layout}
-          name="basic"
-          initialValues={{
-            remember: true,
-          }}
-          onFinish={onFinish}
-          onFinishFailed={onFinishFailed}
-          form={form}
-        >
-          <div style={{ display: "flex", justifyContent: "space-between" }}>
-            <div style={{ width: "45%" }}>
-              <Form.Item>
-                <Title level={5}>Code</Title>
-                <Form.Item
-                  name="code"
-                  rules={[
-                    () => ({
-                      validator(rule, value = "") {
-                        if (value.length > 0 && value.length < 7) {
-                          return Promise.reject("Code length 7-20");
-                        } else if (value.length === 0) {
-                          return Promise.reject("Require");
-                        } else {
-                          return Promise.resolve();
-                        }
-                      },
-                    }),
-                  ]}
-                >
-                  <Input placeholder="Student Code" />
-                </Form.Item>
-              </Form.Item>
-              <Form.Item>
-                <Title level={5}>Name</Title>
-                <Form.Item
-                  name="username"
-                  rules={[
-                    () => ({
-                      validator(rule, value = "") {
-                        if (value.length < 7 || value.length > 20) {
-                          return Promise.reject("Username length 7-20");
-                        } else if (value.length === 0) {
-                          return Promise.reject("Require");
-                        } else {
-                          return Promise.resolve();
-                        }
-                      },
-                    }),
-                  ]}
-                >
-                  <Input placeholder="Name" />
-                </Form.Item>
-              </Form.Item>
-              <Form.Item>
-                <Title level={5}>Email</Title>
-                <Form.Item
-                  name="email"
-                  rules={[
-                    {
-                      type: "email",
-                      message: "The input is not valid E-mail!",
-                    },
-                    {
-                      required: true,
-                      message: "Please input your E-mail!",
-                    },
-                  ]}
-                >
-                  <Input placeholder="Email" type="email" />
-                </Form.Item>
-              </Form.Item>
-              <Form.Item>
-                <Title level={5}>Gender</Title>
-                <Form.Item
-                  name="gender"
-                  rules={[
-                    { required: true, message: "Please select an option!" },
-                  ]}
-                >
-                  <Radio.Group>
-                    <Radio value="Male">Male</Radio>
-                    <Radio value="Female">Female</Radio>
-                    <Radio value="other">Other</Radio>
-                  </Radio.Group>
-                </Form.Item>
-              </Form.Item>
-              <Form.Item>
-                <Title level={5}>Status</Title>
-                <Form.Item
-                  name="status"
-                  rules={[
-                    { required: true, message: "Please select an option!" },
-                  ]}
-                >
-                  <Radio.Group>
-                    <Radio value="Studying">Studying</Radio>
-                    <Radio value="Studyed">Studyed</Radio>
-                  </Radio.Group>
-                </Form.Item>
-              </Form.Item>
-              <Form.Item>
-                <Title level={5}>Date of birth</Title>
-                <Form.Item
-                  name="dateOfBirth"
-                  rules={[
-                    { required: true, message: "Please select an option!" },
-                  ]}
-                >
-                  <DatePicker format={"YYYY/MM/DD"}/>
-                </Form.Item>
-              </Form.Item>
-            </div>
-            <div style={{ width: "45%" }}>
-              <Form.Item>
-                <Title level={5}>Hometouwn</Title>
-                <Form.Item
-                  name="hometouwn"
-                  rules={[
-                    () => ({
-                      validator(rule, value = "") {
-                        if (value.length < 7 || value.length > 100) {
-                          return Promise.reject("Hometouwn length 7-100");
-                        } else if (value.length === 0) {
-                          return Promise.reject("Require");
-                        } else {
-                          return Promise.resolve();
-                        }
-                      },
-                    }),
-                  ]}
-                >
-                  <Input placeholder="Hometown" />
-                </Form.Item>
-              </Form.Item>
-              <Form.Item>
-                <Title level={5}>Citizen ID</Title>
-                <Form.Item
-                  name="citizenId"
-                  rules={[
-                    () => ({
-                      validator(rule, value = "") {
-                        if (value.length > 13 || value.length < 11) {
-                          return Promise.reject("Citizen ID length 12");
-                        } else if (value.length === 0) {
-                          return Promise.reject("Require");
-                        } else {
-                          return Promise.resolve();
-                        }
-                      },
-                    }),
-                  ]}
-                >
-                  <Input placeholder="ID" type="number" />
-                </Form.Item>
-              </Form.Item>
-              <Form.Item>
-                <Title level={5}>Phone number</Title>
-                <Form.Item
-                  name="phone"
-                  rules={[
-                    () => ({
-                      validator(rule, value = "") {
-                        if (value.length > 11 || value.length < 9) {
-                          return Promise.reject("Phone number length 10");
-                        } else if (value.length === 0) {
-                          return Promise.reject("Require");
-                        } else {
-                          return Promise.resolve();
-                        }
-                      },
-                    }),
-                  ]}
-                >
-                  <Input placeholder="Phone" type="number"/>
-                </Form.Item>
-              </Form.Item>
-              <Form.Item>
-                <Title level={5}>Specialized</Title>
-                <Form.Item
-                  name="specialized"
-                  rules={[
-                    { required: true, message: "Please select an option!" },
-                  ]}
-                >
-                  <Select>
-                    <Option value="Information Technology">
-                      Information Technology
-                    </Option>
-                    <Option value="Medicine">Medicine</Option>
-                    <Option value="Travel">Travel</Option>
-                  </Select>
-                </Form.Item>
-              </Form.Item>
-              <Form.Item>
-                <Title level={5}>Class</Title>
-                <Form.Item
-                  name="class"
-                  rules={[
-                    { required: true, message: "Please select an option!" },
-                  ]}
-                >
-                  <Select>
-                    <Option value="D101">D101</Option>
-                    <Option value="D115">D115</Option>
-                    <Option value="D112">D112</Option>
-                    <Option value="D118">D118</Option>
-                  </Select>
-                </Form.Item>
-              </Form.Item>
-              <Form.Item>
-                <Title level={5}>Ganeration</Title>
-                <Form.Item
-                  name="ganeration"
-                  rules={[
-                    { required: true, message: "Please select an option!" },
-                  ]}
-                >
-                  <Select>
-                    <Option value="11">11</Option>
-                    <Option value="12">12</Option>
-                    <Option value="13">13</Option>
-                    <Option value="14">14</Option>
-                  </Select>
-                </Form.Item>
-              </Form.Item>
-            </div>
-          </div>
-          <Form.Item>
-            {displayBtnAdd ? (
-              <Button
-                type="primary"
-                htmlType="submit"
-                className="btn_add_up_stu"
-              >
-                ADD
-              </Button>
-            ) : (
-              <Button
-                type="primary"
-                htmlType="submit"
-                className="btn_add_up_stu"
-              >
-                UPDATE
-              </Button>
-            )}
-          </Form.Item>
-        </Form>
-      </Modal>
-
+        displayBtnAdd={displayBtnAdd}
+        getStudent={getStudent}
+        handleCancel={handleCancel}
+        idStudentUpdate={idStudentUpdate}
+        form={form}
+      />
 
       {/* Modal hiển thị thông tin học sinh */}
-      <Modal
-        title="Student Infomation"
+      <ModalDisplayInforStudent
         visible={visibleFormShowInfo}
         onCancel={handleCancelFormShowInfo}
-        cancelButtonProps={{ style: { display: "none" } }}
-        okButtonProps={{ style: { display: "none" } }}
-        forceRender
-      >
-        <div className='modal_display_info_stu'>
-          <div>
-              <div className='modal_display_info_stu_item'>
-                <p>Student Code: </p>
-                <p className='modal_display_info_stu_item_value'>{ inforStudent.code }</p>
-              </div>
-              <div className='modal_display_info_stu_item'>
-                <p>Name: </p>
-                <p className='modal_display_info_stu_item_value'>{ inforStudent.username }</p>
-              </div>
-              <div className='modal_display_info_stu_item'>
-                <p>Gender: </p>
-                <p className='modal_display_info_stu_item_value'>{ inforStudent.gender }</p>
-              </div>
-              <div className='modal_display_info_stu_item'>
-                <p>Date of birth: </p>
-                <p className='modal_display_info_stu_item_value'>{ convertDate(inforStudent.dateOfBirth) }</p>
-              </div>
-              <div className='modal_display_info_stu_item'>
-                <p>Hometouwn: </p>
-                <p className='modal_display_info_stu_item_value'>{ inforStudent.hometouwn }</p>
-              </div>
-          </div>
-          <div>
-              <div className='modal_display_info_stu_item'>
-                <p>Class: </p>
-                <p className='modal_display_info_stu_item_value'>{ inforStudent.class }</p>
-              </div>
-              <div className='modal_display_info_stu_item'>
-                <p>Ganeration: </p>
-                <p className='modal_display_info_stu_item_value'>{ inforStudent.ganeration }</p>
-              </div>
-              <div className='modal_display_info_stu_item'>
-                <p>Phone number: </p>
-                <p className='modal_display_info_stu_item_value'>{ inforStudent.phone }</p>
-              </div>
-              <div className='modal_display_info_stu_item'>
-                <p>Status: </p>
-                <p className='modal_display_info_stu_item_value'>{ inforStudent.status }</p>
-              </div>
-              
-          </div>
-        </div>
-      </Modal>
-      
+        data={inforStudent}
+      />
     </div>
   );
-} 
+}
 
 export default ContentHomeStudent;

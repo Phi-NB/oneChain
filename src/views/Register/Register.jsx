@@ -126,7 +126,7 @@ function Register(props) {
           autoComplete="off"
         >
           <Form.Item>
-            <Title level={5}>Code</Title>
+            <Title level={5}>Username</Title>
             <Form.Item
               name="code"
               rules={[
@@ -143,7 +143,7 @@ function Register(props) {
                 }),
               ]}
             >
-              <Input placeholder="Code" />
+              <Input placeholder="Username" />
             </Form.Item>
           </Form.Item>
 

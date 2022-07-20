@@ -92,8 +92,8 @@ function Login(props) {
         {({ errors, touched }) => (
           <Form>
             <div className="form_control">
-              <p>Code</p>
-              <Field name="code" type="text" placeholder="Code" />
+              <p>Username</p>
+              <Field name="code" type="text" placeholder="Username" />
               {touched.code && errors.code && (
                 <div className="message_erro">{errors.code}</div>
               )}
