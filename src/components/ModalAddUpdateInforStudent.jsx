@@ -61,7 +61,6 @@ const error = (mess) => {
   message.error(mess);
 };
 
-
 function ModalAddUpdateInforStudent(props) {
   const [urlImage, setUrlImage] = useState("");
 
@@ -150,7 +149,7 @@ function ModalAddUpdateInforStudent(props) {
           onFinishFailed={onFinishFailed}
           form={props.form}
         >
-          <div className="formAddUpdateStudent" >
+          <div className="formAddUpdateStudent">
             <div className="formAddUpdateStudent-item">
               <Form.Item>
                 <Title level={5}>Code</Title>
@@ -325,7 +324,8 @@ function ModalAddUpdateInforStudent(props) {
                     { required: true, message: "Please select an option!" },
                   ]}
                 >
-                  <Select>
+                  <Select
+                  >
                     <Option value="Information Technology">
                       Information Technology
                     </Option>

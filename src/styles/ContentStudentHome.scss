@@ -168,11 +168,10 @@ input[type="number"] {
 }
 
 .ant-card-body {
-  background-image: url('../../public/hinh-anh-background-mang-mau-tam-giac-xanh-trang_034911863.jpg');
+  background-image: url("../../public/hinh-anh-background-mang-mau-tam-giac-xanh-trang_034911863.jpg");
   background-repeat: no-repeat;
   background-size: 100% 38%;
 }
-
 
 @media (max-width: 768px) {
   .formAddUpdateStudent {
@@ -187,12 +186,15 @@ input[type="number"] {
       }
     }
   }
-
 }
 
 @media (max-width: 576px) and (min-width: 480px) {
 }
-@media (max-width: 768px) and (min-width: 576px) {}
-@media (max-width: 992px) and (min-width: 768px) {}
-@media (max-width: 1200px) and (min-width: 992px) {}
-@media (max-width: 1600px) and (min-width: 1200px) {}
+@media (max-width: 768px) and (min-width: 576px) {
+}
+@media (max-width: 992px) and (min-width: 768px) {
+}
+@media (max-width: 1200px) and (min-width: 992px) {
+}
+@media (max-width: 1600px) and (min-width: 1200px) {
+}
