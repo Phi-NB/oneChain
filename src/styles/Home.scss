@@ -230,6 +230,14 @@ body {
   min-width: 720px;
 }
 
+.ant-drawer-content-wrapper {
+  width: 220px;
+}
+
+.ant-modal-wrap {
+  z-index: 10000;
+}
+
 @media (max-width: 768px) {
   .site-layout {
     .site-layout-background {
@@ -325,6 +333,18 @@ body {
 
   .ant-modal {
     top: 24px;
+  }
+
+  .loader {
+    top: 42%;
+    left: 42%;
+  }
+
+  thead {
+    font-size: 12px;
+  }
+  tbody {
+    font-size: 12px;
   }
 }
 @media (max-width: 576px) and (min-width: 480px) {

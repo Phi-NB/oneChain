@@ -76,13 +76,6 @@ function ContentHomeStudent(props) {
   const [loading, setLoading] = useState(false);
   const [form] = Form.useForm();
 
-  const uploadButton = (
-    <div className="editImg">
-      <EditOutlined />
-      Edit
-    </div>
-  );
-
   // Khởi chạy dữ liệu
   useEffect(() => {
     try {

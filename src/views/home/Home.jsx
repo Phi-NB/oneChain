@@ -63,12 +63,19 @@ function Home(props) {
   const [image, setImage] = useState(null);
   const [urlImage, setUrlImage] = useState("");
   const [visibleDrawer, setVisibleDrawer] = useState(false);
+  const [viewportWidth, setViewportWidth] = useState(0);
   const uploadButton = (
     <div className="editImg">
       <EditOutlined />
       Edit
     </div>
   );
+
+  window.onresize = function onresize() {
+    if (typeof window.innerWidth != "undefined") {
+      setViewportWidth(window.innerWidth);
+    }
+  };
 
   useEffect(() => {
     getDataUser();
@@ -154,12 +161,6 @@ function Home(props) {
       phone: user[0].phone,
     });
   };
-
-  const CustomTrigger = () => (
-    <div className="trigger">
-      <MenuFoldOutlined />
-    </div>
-  );
 
   const handleChange = (info) => {
     console.log(info.file.status);
@@ -249,14 +250,19 @@ function Home(props) {
       <Drawer
         placement="left"
         closable={false}
-        width={260}
         onClose={onCloseDrawer}
         visible={visibleDrawer}
+        width={window.innerWidth > 900 ? 240 : 200}
       >
         <div>
           <div className="logo">
             {user.length !== 0 && user.image !== "" ? (
-              <Avatar onClick={showInfoUser} size={120} src={user[0].image} />
+              <Avatar
+                onClick={showInfoUser}
+                size={120}
+                src={user[0].image}
+                style={{ cursor: "pointer" }}
+              />
             ) : (
               <Avatar
                 onClick={showInfoUser}
@@ -288,17 +294,6 @@ function Home(props) {
           <LogoutOutlined onClick={logout} />
           <p>Logout</p>
         </div>
-        {/* <Sider
-          width={200}
-          defaultCollapsed={true}
-          breakpoint="2xxl"
-          collapsedWidth={0}
-          collapsible
-          trigger={<CustomTrigger />}
-          reverseArrow={true}
-          className="sider"
-        >
-        </Sider> */}
       </Drawer>
 
       {/* modal hiển thị thông tin user */}
@@ -443,8 +438,8 @@ function Home(props) {
           onFinishFailed={onFinishFailed}
           form={form}
         >
-          <div style={{ display: "flex", justifyContent: "space-between" }}>
-            <div style={{ width: "45%" }}>
+          <div className="formAddUpdateStudent">
+            <div className="formAddUpdateStudent-item">
               <Form.Item>
                 <Title level={5}>Username</Title>
                 <Form.Item
@@ -501,7 +496,7 @@ function Home(props) {
                 </Form.Item>
               </Form.Item>
             </div>
-            <div style={{ width: "45%" }}>
+            <div className="formAddUpdateStudent-item">
               <Form.Item>
                 <Title level={5}>Date of birth</Title>
                 <Form.Item name="dateOfBirth">
@@ -516,41 +511,13 @@ function Home(props) {
               </Form.Item>
               <Form.Item>
                 <Title level={5}>Citizen ID</Title>
-                <Form.Item
-                  name="citizenId"
-                  rules={[
-                    () => ({
-                      validator(rule, value = "") {
-                        if (value.length === 0) {
-                          return Promise.resolve();
-                        }
-                        if (value.length < 11 || value.length > 13) {
-                          return Promise.reject("Phone number length 12");
-                        }
-                      },
-                    }),
-                  ]}
-                >
+                <Form.Item name="citizenId">
                   <Input placeholder="ID" type="number" />
                 </Form.Item>
               </Form.Item>
               <Form.Item>
                 <Title level={5}>Phone number</Title>
-                <Form.Item
-                  name="phone"
-                  rules={[
-                    () => ({
-                      validator(rule, value = "") {
-                        if (value.length === 0) {
-                          return Promise.resolve();
-                        }
-                        if (value.length < 9 || value.length > 10) {
-                          return Promise.reject("Phone number length 10");
-                        }
-                      },
-                    }),
-                  ]}
-                >
+                <Form.Item name="phone">
                   <Input placeholder="Phone" type="number" />
                 </Form.Item>
               </Form.Item>
