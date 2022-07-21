@@ -21,7 +21,8 @@ import {
   Button,
   Upload,
   message,
-  Spin
+  Spin,
+  Drawer,
 } from "antd";
 import moment from "moment";
 import ImgCrop from "antd-img-crop";
@@ -61,6 +62,7 @@ function Home(props) {
   const [loading, setLoading] = useState(false);
   const [image, setImage] = useState(null);
   const [urlImage, setUrlImage] = useState("");
+  const [visibleDrawer, setVisibleDrawer] = useState(false);
   const uploadButton = (
     <div className="editImg">
       <EditOutlined />
@@ -83,10 +85,6 @@ function Home(props) {
   const logout = () => {
     setCookieUser("user", "", { path: "/" });
     navigate("/login");
-  };
-
-  const getcollapsed = (data) => {
-    setCollapsed(data);
   };
 
   const handleCancel = () => {
@@ -124,7 +122,13 @@ function Home(props) {
       if (!data.username) {
         data.username = "";
       }
-      await updateDataUser(data, cookieUser.user, user[0].password, (!urlImage ? '' : urlImage) , user[0].dateJoin);
+      await updateDataUser(
+        data,
+        cookieUser.user,
+        user[0].password,
+        !urlImage ? "" : urlImage,
+        user[0].dateJoin
+      );
       form.resetFields();
       success("Update student success");
       getDataUser();
@@ -152,7 +156,7 @@ function Home(props) {
   };
 
   const CustomTrigger = () => (
-    <div className="trigger" onClick={showSider}>
+    <div className="trigger">
       <MenuFoldOutlined />
     </div>
   );
@@ -160,17 +164,13 @@ function Home(props) {
   const handleChange = (info) => {
     console.log(info.file.status);
     if (info.file.status === "uploading") {
-      
       warning("Updating image");
-      setLoading(true)
+      setLoading(true);
     }
     if (info.file.status === "done") {
-
     }
   };
-  const beforeUpload = (file) => {
-
-  };
+  const beforeUpload = (file) => {};
 
   const customUpload = async ({ file }) => {
     const metadata = {
@@ -192,34 +192,46 @@ function Home(props) {
           .getDownloadURL()
           .then((url) => {
             setUrlImage(url);
-            if(user[0].dateOfBirth === undefined) {
-              user[0].dateOfBirth = ''
+            if (user[0].dateOfBirth === undefined) {
+              user[0].dateOfBirth = "";
             }
-            if(user[0].citizenId === undefined) {
-              user[0].citizenId = ''
+            if (user[0].citizenId === undefined) {
+              user[0].citizenId = "";
             }
-            if(user[0].phone === undefined) {
-              user[0].phone = ''
+            if (user[0].phone === undefined) {
+              user[0].phone = "";
             }
-            if(user[0].gender === undefined) {
-              user[0].gender = ''
+            if (user[0].gender === undefined) {
+              user[0].gender = "";
             }
-            if(user[0].hometouwn === undefined) {
-              user[0].hometouwn = ''
+            if (user[0].hometouwn === undefined) {
+              user[0].hometouwn = "";
             }
-            if(user[0].username === undefined) {
-              user[0].username = ''
+            if (user[0].username === undefined) {
+              user[0].username = "";
             }
-            updateDataUser(user[0], cookieUser.user, user[0].password, url, user[0].dateJoin);
+            updateDataUser(
+              user[0],
+              cookieUser.user,
+              user[0].password,
+              url,
+              user[0].dateJoin
+            );
             getDataUser();
             console.log(url);
-            setLoading(false)
+            setLoading(false);
           });
       }
     );
   };
-  
-  const showSider = () => {};
+
+  const onCloseDrawer = () => {
+    setVisibleDrawer(false);
+  };
+
+  const showDrawer = (data) => {
+    setVisibleDrawer(data);
+  };
 
   return (
     <Layout>
@@ -231,18 +243,15 @@ function Home(props) {
             minHeight: 280,
           }}
         >
-          <ContentHomeStudent />
+          <ContentHomeStudent showDrawer={showDrawer} />
         </Content>
       </Layout>
-      <Sider
-        width={200}
-        defaultCollapsed={true}
-        breakpoint="2xxl"
-        collapsedWidth={0}
-        collapsible
-        trigger={<CustomTrigger />}
-        reverseArrow={true}
-        className="sider"
+      <Drawer
+        placement="left"
+        closable={false}
+        width={260}
+        onClose={onCloseDrawer}
+        visible={visibleDrawer}
       >
         <div>
           <div className="logo">
@@ -267,6 +276,11 @@ function Home(props) {
                 icon: <UserOutlined />,
                 label: "Student",
               },
+              {
+                key: "2",
+                icon: <UserOutlined />,
+                label: "Teacher",
+              },
             ]}
           />
         </div>
@@ -274,7 +288,18 @@ function Home(props) {
           <LogoutOutlined onClick={logout} />
           <p>Logout</p>
         </div>
-      </Sider>
+        {/* <Sider
+          width={200}
+          defaultCollapsed={true}
+          breakpoint="2xxl"
+          collapsedWidth={0}
+          collapsible
+          trigger={<CustomTrigger />}
+          reverseArrow={true}
+          className="sider"
+        >
+        </Sider> */}
+      </Drawer>
 
       {/* modal hiển thị thông tin user */}
       <Modal
@@ -285,32 +310,29 @@ function Home(props) {
       >
         <div className="modal_display_info_user">
           <div>
-          <Spin spinning={loading}>
-
-            {user.length !== 0 && user.image !== "" ? (
-              <Avatar size={120} src={user[0].image} />
-            ) : (
-              <Avatar size={120} icon={<UserOutlined />} />
-            )}
-            <Upload
-              name="avatar"
-              listType="picture-card"
-              className="avatar-uploader"
-              beforeUpload={beforeUpload}
-              onChange={handleChange}
-              customRequest={customUpload}
-            >
-              {image ? <img src={image} alt="avatar" /> : uploadButton}
-            </Upload>
+            <Spin spinning={loading}>
+              {user.length !== 0 && user.image !== "" ? (
+                <Avatar size={120} src={user[0].image} />
+              ) : (
+                <Avatar size={120} icon={<UserOutlined />} />
+              )}
+              <Upload
+                name="avatar"
+                listType="picture-card"
+                className="avatar-uploader"
+                beforeUpload={beforeUpload}
+                onChange={handleChange}
+                customRequest={customUpload}
+              >
+                {image ? <img src={image} alt="avatar" /> : uploadButton}
+              </Upload>
             </Spin>
           </div>
           <div>
             <Title level={3} style={{ color: "#36363c", fontWeight: "700" }}>
               DETAIL PROFILE
             </Title>
-            <div
-              className="modal_display_info_user_content"
-            >
+            <div className="modal_display_info_user_content">
               <div>
                 <table>
                   <tbody>
@@ -349,7 +371,7 @@ function Home(props) {
                   </tbody>
                 </table>
               </div>
-              <div className="modal_display_infor_user_colLeft" >
+              <div className="modal_display_infor_user_colLeft">
                 <table>
                   <tbody>
                     <tr className="modal_display_infor_user">
@@ -494,37 +516,41 @@ function Home(props) {
               </Form.Item>
               <Form.Item>
                 <Title level={5}>Citizen ID</Title>
-                <Form.Item name="citizenId"
-                rules={[
-                  () => ({
-                    validator(rule, value = "") {
-                      if (value.length === 0) {
-                        return Promise.resolve();
-                      }
-                      if (value.length < 11 || value.length > 13) {
-                        return Promise.reject("Phone number length 12");
-                      }
-                    },
-                  }),
-                ]}>
+                <Form.Item
+                  name="citizenId"
+                  rules={[
+                    () => ({
+                      validator(rule, value = "") {
+                        if (value.length === 0) {
+                          return Promise.resolve();
+                        }
+                        if (value.length < 11 || value.length > 13) {
+                          return Promise.reject("Phone number length 12");
+                        }
+                      },
+                    }),
+                  ]}
+                >
                   <Input placeholder="ID" type="number" />
                 </Form.Item>
               </Form.Item>
               <Form.Item>
                 <Title level={5}>Phone number</Title>
-                <Form.Item name="phone"
-                rules={[
-                  () => ({
-                    validator(rule, value = "") {
-                      if (value.length === 0) {
-                        return Promise.resolve();
-                      }
-                      if (value.length < 9 || value.length > 10) {
-                        return Promise.reject("Phone number length 10");
-                      }
-                    },
-                  }),
-                ]}>
+                <Form.Item
+                  name="phone"
+                  rules={[
+                    () => ({
+                      validator(rule, value = "") {
+                        if (value.length === 0) {
+                          return Promise.resolve();
+                        }
+                        if (value.length < 9 || value.length > 10) {
+                          return Promise.reject("Phone number length 10");
+                        }
+                      },
+                    }),
+                  ]}
+                >
                   <Input placeholder="Phone" type="number" />
                 </Form.Item>
               </Form.Item>

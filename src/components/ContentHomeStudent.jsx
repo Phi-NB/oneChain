@@ -69,15 +69,11 @@ function ContentHomeStudent(props) {
   const [displayBtnAdd, setDisplayBtnAdd] = useState(false);
   const [idStudent, setIdStudent] = useState("");
   const [idStudentUpdate, setIdStudentUpdate] = useState("");
-  const [collapsed, setCollapsed] = useState(true);
   const [inforStudent, setInforStudent] = useState({});
   const [isLoading, setIsLoading] = useState(true);
   const [displayTable, setDisplayTable] = useState(false);
   const [displayGrid, setDisplayTGrid] = useState(true);
-  const [urlImage, setUrlImage] = useState("");
   const [loading, setLoading] = useState(false);
-  const [valueSelectStatus, setValueStatus] = useState("");
-  const [valueSelectClass, setValueClass] = useState("");
   const [form] = Form.useForm();
 
   const uploadButton = (
@@ -316,6 +312,7 @@ function ContentHomeStudent(props) {
     success("Delete student successfully");
     getStudent();
   };
+
   const menu = (element) => (
     <Menu
       items={[
@@ -339,10 +336,18 @@ function ContentHomeStudent(props) {
       ]}
     />
   );
+
+  const setShowDrawer = () => {
+    props.showDrawer(true);
+  }
+
   // Render dữ liệu ra màn hình
   return (
     <div>
       <Header className="site-layout-background">
+        <Button className="add-student btnOpenDrawer" onClick={setShowDrawer} >
+          <MenuUnfoldOutlined />
+        </Button>
         <div className="site-layout-header-title">
           <Title style={{ color: "#fff" }} level={3}>
             STUDENT MANAGEMENT
@@ -514,6 +519,7 @@ function ContentHomeStudent(props) {
         onCancel={handleCancelFormShowInfo}
         data={inforStudent}
       />
+
     </div>
   );
 }

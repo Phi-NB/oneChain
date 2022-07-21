@@ -150,8 +150,8 @@ function ModalAddUpdateInforStudent(props) {
           onFinishFailed={onFinishFailed}
           form={props.form}
         >
-          <div style={{ display: "flex", justifyContent: "space-between" }}>
-            <div style={{ width: "45%" }}>
+          <div className="formAddUpdateStudent" >
+            <div className="formAddUpdateStudent-item">
               <Form.Item>
                 <Title level={5}>Code</Title>
                 <Form.Item
@@ -253,7 +253,7 @@ function ModalAddUpdateInforStudent(props) {
                 </Form.Item>
               </Form.Item>
             </div>
-            <div style={{ width: "45%" }}>
+            <div className="formAddUpdateStudent-item">
               <Form.Item>
                 <Title level={5}>Hometouwn</Title>
                 <Form.Item
