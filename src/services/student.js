@@ -4,17 +4,30 @@ import 'firebase/compat/database'
 
 const d = new Date();
 
-const getDataStudent = async () => {
+const getDataStudent = async (page) => {
   const events = db.collection("student");
   const tempDoc = [];
-  await events
-  .orderBy("dateJoin", 'desc')
-  .get()
-  .then((querySnapshot) => {
-    querySnapshot.forEach((doc) => {
-      tempDoc.push({ id: doc.id, ...doc.data() });
+  if(page) {
+    await events
+    .orderBy("dateJoin", 'desc')
+    .startAt((page - 1) * 6)
+    .limit(6)
+    .get()
+    .then((querySnapshot) => {
+      querySnapshot.forEach((doc) => {
+        tempDoc.push({ id: doc.id, ...doc.data() });
+      });
     });
-  });
+  } else {
+    await events
+    .orderBy("dateJoin", 'desc')
+    .get()
+    .then((querySnapshot) => {
+      querySnapshot.forEach((doc) => {
+        tempDoc.push({ id: doc.id, ...doc.data() });
+      });
+    });
+  }
   return tempDoc;
 };
 

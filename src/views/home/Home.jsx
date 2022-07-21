@@ -36,7 +36,6 @@ import { storage } from "../../firebase/config";
 
 const { Sider, Content } = Layout;
 const { Title } = Typography;
-const { Option } = Select;
 
 const success = (mess) => {
   message.success(mess);
@@ -58,24 +57,16 @@ function Home(props) {
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [isModalVisibleEditProf, setIsModalVisibleEditProf] = useState(false);
   const [form] = Form.useForm();
-  const [fileList, setFileList] = useState([]);
   const [loading, setLoading] = useState(false);
   const [image, setImage] = useState(null);
   const [urlImage, setUrlImage] = useState("");
   const [visibleDrawer, setVisibleDrawer] = useState(false);
-  const [viewportWidth, setViewportWidth] = useState(0);
   const uploadButton = (
     <div className="editImg">
       <EditOutlined />
       Edit
     </div>
   );
-
-  window.onresize = function onresize() {
-    if (typeof window.innerWidth != "undefined") {
-      setViewportWidth(window.innerWidth);
-    }
-  };
 
   useEffect(() => {
     getDataUser();
@@ -134,7 +125,7 @@ function Home(props) {
         cookieUser.user,
         user[0].password,
         !urlImage ? "" : urlImage,
-        user[0].dateJoin
+        !user[0].dateJoin ? "" : user[0].dateJoin
       );
       form.resetFields();
       success("Update student success");
@@ -400,7 +391,7 @@ function Home(props) {
                       </td>
                       <td className="modal_display_info_user_value">
                         <span>/</span>
-                        {user.length !== 0 ? convertDate(user[0].dateJoin) : ""}
+                        {user.length !== 0 && user[0].dateJoin ? convertDate(user[0].dateJoin) : ""}
                       </td>
                     </tr>
                   </tbody>

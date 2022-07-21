@@ -20,6 +20,7 @@ import {
   Menu,
   Upload,
   Spin,
+  Pagination,
 } from "antd";
 import {
   DeleteOutlined,
@@ -74,6 +75,7 @@ function ContentHomeStudent(props) {
   const [displayTable, setDisplayTable] = useState(false);
   const [displayGrid, setDisplayTGrid] = useState(true);
   const [loading, setLoading] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
   const [form] = Form.useForm();
 
   // Khởi chạy dữ liệu
@@ -90,6 +92,8 @@ function ContentHomeStudent(props) {
     const data = await getDataStudent();
     setStudents(data);
   };
+
+  console.log(students);
 
   // Hàm chuyển đổi dữ liệu trước khi thêm vào bảng
   const data = students.map((student, index) => {
@@ -332,13 +336,17 @@ function ContentHomeStudent(props) {
 
   const setShowDrawer = () => {
     props.showDrawer(true);
-  }
+  };
+
+  const onChangePage = (page) => {
+    setCurrentPage(page);
+  };
 
   // Render dữ liệu ra màn hình
   return (
     <div>
       <Header className="site-layout-background">
-        <Button className="add-student btnOpenDrawer" onClick={setShowDrawer} >
+        <Button className="add-student btnOpenDrawer" onClick={setShowDrawer}>
           <MenuUnfoldOutlined />
         </Button>
         <div className="site-layout-header-title">
@@ -381,7 +389,7 @@ function ContentHomeStudent(props) {
           </Select>
         </div>
       </div>
-      <div className='groupsBtn-tranfer-view'>
+      <div className="groupsBtn-tranfer-view">
         <Button
           onClick={showGridView}
           type="primary"
@@ -402,7 +410,12 @@ function ContentHomeStudent(props) {
       {/* Bảng render thông tin các học sinh */}
 
       {displayTable && (
-        <Table columns={columns} dataSource={data} pagination={false} />
+        <Table
+          columns={columns}
+          dataSource={data}
+          pagination={false}
+          style={{ marginBottom: 40 }}
+        />
       )}
 
       {displayGrid && (
@@ -445,21 +458,6 @@ function ContentHomeStudent(props) {
                           />
                         )}
                       </Spin>
-                      {/* <Upload
-                        name="avatar"
-                        listType="picture-card"
-                        className="avatar-uploader"
-                        beforeUpload={beforeUpload}
-                        onChange={handleChange}
-                        customRequest={customUpload}
-                        onClick={() => getStudentUpdate(element)}
-                      >
-                        {image ? (
-                          <img src={image} alt="avatar" />
-                        ) : (
-                          uploadButton
-                        )}
-                      </Upload> */}
                     </div>
                     <Title
                       style={{ textAlign: "center", marginTop: 20 }}
@@ -493,6 +491,11 @@ function ContentHomeStudent(props) {
         </div>
       )}
 
+      <Pagination
+        current={currentPage}
+        onChange={onChangePage}
+        total={students.length}
+      />
       {/* Modal thêm và update thồng tin học sinh */}
 
       <ModalAddUpdateInforStudent
@@ -512,7 +515,6 @@ function ContentHomeStudent(props) {
         onCancel={handleCancelFormShowInfo}
         data={inforStudent}
       />
-
     </div>
   );
 }

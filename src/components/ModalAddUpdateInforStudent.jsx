@@ -2,42 +2,18 @@ import React, { useState } from "react";
 import {
   Input,
   Button,
-  Popconfirm,
   Typography,
   Modal,
   Select,
-  Layout,
-  Table,
   Form,
   Radio,
   DatePicker,
   message,
-  Card,
-  Col,
-  Row,
-  Avatar,
-  Dropdown,
-  Menu,
-  Upload,
   Spin,
 } from "antd";
-import {
-  DeleteOutlined,
-  EditOutlined,
-  UserAddOutlined,
-  MenuUnfoldOutlined,
-  MenuFoldOutlined,
-  EyeOutlined,
-  UserOutlined,
-  MoreOutlined,
-  EllipsisOutlined,
-} from "@ant-design/icons";
 import getDataStudent, {
   addDataStudent,
-  deleteDataStudent,
   updateDataStudent,
-  filterStudent,
-  searchStudent,
 } from "../services/student";
 import { storage } from "../firebase/config";
 
