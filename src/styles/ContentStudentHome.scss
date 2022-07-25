@@ -321,6 +321,16 @@ input[type="number"] {
   .ant-table {
     box-shadow: 0 0rem transparent;
   }
+  .login {
+    max-width: 360px;
+    .login_form {
+      flex-direction: column;
+      justify-content: center;
+      .login_form_item {
+        width: 100%;
+      } 
+    }
+  }
 }
 
 @media (max-width: 576px) and (min-width: 480px) {
