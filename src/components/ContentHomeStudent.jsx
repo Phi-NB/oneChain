@@ -4,13 +4,10 @@ import {
   Button,
   Popconfirm,
   Typography,
-  Modal,
   Select,
   Layout,
   Table,
   Form,
-  Radio,
-  DatePicker,
   message,
   Card,
   Col,
@@ -18,7 +15,6 @@ import {
   Avatar,
   Dropdown,
   Menu,
-  Upload,
   Spin,
   Pagination,
 } from "antd";
@@ -27,7 +23,6 @@ import {
   EditOutlined,
   UserAddOutlined,
   MenuUnfoldOutlined,
-  MenuFoldOutlined,
   EyeOutlined,
   UserOutlined,
   MoreOutlined,
@@ -35,23 +30,18 @@ import {
 } from "@ant-design/icons";
 import "../styles/ContentStudentHome.scss";
 import getDataStudent, {
-  addDataStudent,
   deleteDataStudent,
-  updateDataStudent,
   filterStudent,
-  searchStudent,
 } from "../services/student";
 import moment from "moment";
 import Loading from "../components/Loading.jsx";
 import ModalDisplayInforStudent from "./ModalDisplayInforStudent";
 import ModalAddUpdateInforStudent from "./ModalAddUpdateInforStudent";
-import { storage } from "../firebase/config";
 
 const { Title } = Typography;
 const { Search } = Input;
 const { Option } = Select;
 const { Header } = Layout;
-const { Meta } = Card;
 
 const success = (mess) => {
   message.success(mess);
@@ -75,9 +65,15 @@ function ContentHomeStudent(props) {
   const [displayTable, setDisplayTable] = useState(false);
   const [displayGrid, setDisplayTGrid] = useState(true);
   const [loading, setLoading] = useState(false);
-  const [currentPage, setCurrentPage] = useState(1);
   const [form] = Form.useForm();
-
+  const [currentPage, setCurrentPage] = useState(1);
+  const limit = 6;
+  const indexOfLastCut = currentPage * limit;
+  const indexOfFirstCut = indexOfLastCut - limit;
+  const currentTodos = students.slice(indexOfFirstCut, indexOfLastCut);
+  const [colorActiveButtonGrid, setColorActiveButtonGrid] = useState("#f0b376");
+  const [colorActiveButtonTable, setColorActiveButtonTable] =
+    useState("#e78539");
   // Khởi chạy dữ liệu
   useEffect(() => {
     try {
@@ -92,11 +88,10 @@ function ContentHomeStudent(props) {
     const data = await getDataStudent();
     setStudents(data);
   };
-
-  console.log(students);
+  
 
   // Hàm chuyển đổi dữ liệu trước khi thêm vào bảng
-  const data = students.map((student, index) => {
+  const data = currentTodos.map((student, index) => {
     return {
       key: index + 1,
       id: student.id,
@@ -266,19 +261,16 @@ function ContentHomeStudent(props) {
   // Hàm lọc sinh viên theo trạng thái
 
   const handleChangeSelectionStatus = async (value) => {
-    console.log("status", value);
     if (value === "all") {
       getStudent();
     } else {
       const result = await filterStudent("status", value);
-
       setStudents(result);
     }
   };
 
   // Hàm lọc sinh viên theo lớp
   const handleChangeSelectionClass = async (value) => {
-    console.log("class", value);
     if (value === "all") {
       getStudent();
     } else {
@@ -297,11 +289,15 @@ function ContentHomeStudent(props) {
   const showGridView = () => {
     setDisplayTGrid(true);
     setDisplayTable(false);
+    setColorActiveButtonGrid('#f0b376')
+    setColorActiveButtonTable('#e78539')
   };
-
+  
   const showTableView = () => {
     setDisplayTGrid(false);
     setDisplayTable(true);
+    setColorActiveButtonGrid('#e78539')
+    setColorActiveButtonTable('#f0b376')
   };
 
   const confirmDeleteStudentGridView = async (element) => {
@@ -340,7 +336,10 @@ function ContentHomeStudent(props) {
 
   const onChangePage = (page) => {
     setCurrentPage(page);
+    // getStudent();
   };
+
+  
 
   // Render dữ liệu ra màn hình
   return (
@@ -350,7 +349,7 @@ function ContentHomeStudent(props) {
           <MenuUnfoldOutlined />
         </Button>
         <div className="site-layout-header-title">
-          <Title style={{ color: "#fff" }} level={3}>
+          <Title level={3}>
             STUDENT MANAGEMENT
           </Title>
         </div>
@@ -394,12 +393,13 @@ function ContentHomeStudent(props) {
           onClick={showGridView}
           type="primary"
           className="btn_add_up_stu"
+          style={{ backgroundColor: colorActiveButtonGrid }}
         >
           View list as grid
         </Button>
         <Button
           onClick={showTableView}
-          style={{ marginLeft: 20 }}
+          style={{ marginLeft: 20, backgroundColor: colorActiveButtonTable}}
           type="primary"
           className="btn_add_up_stu"
         >
@@ -424,10 +424,10 @@ function ContentHomeStudent(props) {
             {data.map((element, index) => {
               return (
                 <Col
-                  xs={{ span: 24 }}
                   xl={{ span: 4 }}
                   lg={{ span: 8 }}
                   md={{ span: 12 }}
+                  xs={{ span: 24 }}
                   key={index}
                 >
                   <Card
@@ -495,6 +495,7 @@ function ContentHomeStudent(props) {
         current={currentPage}
         onChange={onChangePage}
         total={students.length}
+        pageSize={6}
       />
       {/* Modal thêm và update thồng tin học sinh */}
 

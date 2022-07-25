@@ -1,6 +1,11 @@
-$color-primary: transparent;
+$color-primary: #9bd9f2;
+$color-dark: #e78539;
+$color-btn: #e78539;
+$color-btn-light: #fbb57e;
 body {
-  background-image: url("../../public/photo-1654554396063-09b7b57e7c74.jpg");
+  background-image: url("../../public/background.png");
+  background-repeat: repeat-y;
+  background-size: cover;
   color: #172b4d;
 }
 
@@ -23,7 +28,7 @@ body {
 }
 
 .site-layout .site-layout-background {
-  background: #fff;
+  background: #89cfe3;
 }
 
 .ant-layout {
@@ -33,7 +38,7 @@ body {
 .site-layout {
   header {
     margin: 0 16px;
-    padding: 0 24px;
+    padding: 12px 24px;
   }
   .trigger {
     font-size: 20px;
@@ -85,15 +90,19 @@ body {
 }
 
 .site-layout .site-layout-background {
-  background-color: #5f5f59;
   display: flex;
   justify-content: space-between;
   align-items: center;
+
   .add-student {
-    background-color: #7b7b76;
+    background-color: $color-btn;
     color: #fff;
     border: none;
+    &:hover {
+      background-color: $color-btn-light;
+    }
   }
+
   .add-student:focus {
     border: 1px solid hsla(0, 0%, 100%, 0.4);
   }
@@ -102,6 +111,13 @@ body {
 .input-sort {
   margin: 12px 0;
   display: flex;
+  overflow: hidden;
+  .ant-select:not(.ant-select-customize-input) .ant-select-selector {
+    border-radius: 4px;
+    border: none;
+    outline: none;
+    overflow: hidden;
+  }
   .input-search {
     width: 20%;
   }
@@ -118,17 +134,14 @@ body {
   margin: unset;
 }
 
-.ant-layout {
-  background-color: $color-primary;
-}
-
 .ant-btn-primary {
-  background-color: #5f5f59;
+  background-color: $color-btn;
   border-radius: 2px;
   border: none;
+  border-radius: 4px;
   &:hover,
   &:focus {
-    background-color: #7b7b76;
+    background-color: $color-dark;
   }
 }
 
@@ -185,7 +198,7 @@ body {
 
 .modal_display_infor_user {
   .modal_display_infor_user_label {
-    font-weight: 600;
+    font-weight: 700;
   }
   .modal_display_info_user_value {
     padding: 10px 12px;
@@ -204,7 +217,7 @@ body {
 
 .ant-upload.ant-upload-select-picture-card {
   border: 3px solid #ffff;
-  background-color: #7b7b76;
+  background-color: $color-dark;
   cursor: pointer;
   width: 50px;
   text-align: center;
@@ -347,6 +360,7 @@ body {
     font-size: 12px;
   }
 }
+
 @media (max-width: 576px) and (min-width: 480px) {
 }
 @media (max-width: 768px) and (min-width: 576px) {

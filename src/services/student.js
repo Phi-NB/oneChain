@@ -1,33 +1,21 @@
 import db from "../firebase/config.js";
 import firebase from "firebase/compat/app";
-import 'firebase/compat/database'
+import "firebase/compat/database";
 
 const d = new Date();
 
-const getDataStudent = async (page) => {
+const getDataStudent = async () => {
   const events = db.collection("student");
   const tempDoc = [];
-  if(page) {
-    await events
-    .orderBy("dateJoin", 'desc')
-    .startAt((page - 1) * 6)
-    .limit(6)
+  await events
+    .orderBy("dateJoin", "desc")
     .get()
     .then((querySnapshot) => {
       querySnapshot.forEach((doc) => {
         tempDoc.push({ id: doc.id, ...doc.data() });
       });
     });
-  } else {
-    await events
-    .orderBy("dateJoin", 'desc')
-    .get()
-    .then((querySnapshot) => {
-      querySnapshot.forEach((doc) => {
-        tempDoc.push({ id: doc.id, ...doc.data() });
-      });
-    });
-  }
+
   return tempDoc;
 };
 
@@ -36,7 +24,7 @@ export const addDataStudent = async (data, image) => {
     citizenId: data.citizenId,
     class: data.class,
     code: data.code,
-    dateOfBirth: (data.dateOfBirth._d).toString(),
+    dateOfBirth: data.dateOfBirth._d.toString(),
     email: data.email,
     ganeration: data.ganeration,
     gender: data.gender,
@@ -51,21 +39,27 @@ export const addDataStudent = async (data, image) => {
 };
 
 export const updateDataStudent = async (data, id, image) => {
-  await db.collection("student").doc(id).update({
-    citizenId: data.citizenId,
-    class: data.class,
-    code: data.code,
-    dateOfBirth: typeof data.dateOfBirth === 'string' ?  data.dateOfBirth : (data.dateOfBirth._d).toString(),
-    email: data.email,
-    ganeration: data.ganeration,
-    gender: data.gender,
-    hometouwn: data.hometouwn,
-    specialized: data.specialized,
-    username: data.username,
-    phone: data.phone,
-    status: data.status,
-    image: image,
-  });
+  await db
+    .collection("student")
+    .doc(id)
+    .update({
+      citizenId: data.citizenId,
+      class: data.class,
+      code: data.code,
+      dateOfBirth:
+        typeof data.dateOfBirth === "string"
+          ? data.dateOfBirth
+          : data.dateOfBirth._d.toString(),
+      email: data.email,
+      ganeration: data.ganeration,
+      gender: data.gender,
+      hometouwn: data.hometouwn,
+      specialized: data.specialized,
+      username: data.username,
+      phone: data.phone,
+      status: data.status,
+      image: image,
+    });
 };
 
 export const filterStudent = async (key, value) => {
@@ -84,7 +78,6 @@ export const filterStudent = async (key, value) => {
     });
   return tempDoc;
 };
-
 
 export const deleteDataStudent = async (id) => {
   await db.collection("student").doc(id).delete();

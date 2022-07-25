@@ -51,10 +51,7 @@ function Register(props) {
       if (data) {
         try {
           await addDataUser(data);
-
-        } catch {
-
-        }
+        } catch {}
         success();
         navigate("/login");
       } else {
@@ -125,58 +122,65 @@ function Register(props) {
           onFinishFailed={onFinishFailed}
           autoComplete="off"
         >
-          <Form.Item>
-            <Title level={5}>Username</Title>
-            <Form.Item
-              name="code"
-              rules={[
-                () => ({
-                  validator(rule, value = "") {
-                    if (value.length > 0 && value.length < 7) {
-                      return Promise.reject("Code length 7-20");
-                    } else if (value.length === 0) {
-                      return Promise.reject("Require");
-                    } else {
-                      return Promise.resolve();
-                    }
-                  },
-                }),
-              ]}
-            >
-              <Input placeholder="Username" />
-            </Form.Item>
-          </Form.Item>
+          <div className="login_form">
+            <div className="login_form_item">
+              <img src="/login.png" alt="" />
+            </div>
+            <div className="login_form_item">
+              <Form.Item>
+                <Title level={5}>Username</Title>
+                <Form.Item
+                  name="code"
+                  rules={[
+                    () => ({
+                      validator(rule, value = "") {
+                        if (value.length > 0 && value.length < 7) {
+                          return Promise.reject("Code length 7-20");
+                        } else if (value.length === 0) {
+                          return Promise.reject("Require");
+                        } else {
+                          return Promise.resolve();
+                        }
+                      },
+                    }),
+                  ]}
+                >
+                  <Input placeholder="Username" />
+                </Form.Item>
+              </Form.Item>
 
-          <Form.Item>
-            <Title level={5}>Email</Title>
-            <Form.Item
-              name="email"
-              rules={[
-                {
-                  type: "email",
-                  message: "The input is not valid E-mail!",
-                },
-                {
-                  required: true,
-                  message: "Please input your E-mail!",
-                },
-              ]}
-            >
-              <Input placeholder="Email" type="email" />
-            </Form.Item>
-          </Form.Item>
+              <Form.Item>
+                <Title level={5}>Email</Title>
+                <Form.Item
+                  name="email"
+                  rules={[
+                    {
+                      type: "email",
+                      message: "The input is not valid E-mail!",
+                    },
+                    {
+                      required: true,
+                      message: "Please input your E-mail!",
+                    },
+                  ]}
+                >
+                  <Input placeholder="Email" type="email" />
+                </Form.Item>
+              </Form.Item>
 
-          <Form.Item>
-            <Button type="primary" htmlType="submit">
-              Next
-            </Button>
-          </Form.Item>
+              <Form.Item>
+                <Button type="primary" htmlType="submit">
+                  Next
+                </Button>
+              </Form.Item>
 
-          <div className="form-navigate">
-            <span>Do not have an account?</span>
-            <span onClick={navigateLogin} className="register">
-              Login
-            </span>
+              <div className="form-navigate">
+                <span>Do not have an account?</span>
+                <span onClick={navigateLogin} className="register">
+                  Login
+                </span>
+              </div>
+            </div>
           </div>
         </Form>
       )}
@@ -197,64 +201,71 @@ function Register(props) {
           onFinishFailed={onFinishFailed}
           autoComplete="off"
         >
-          <Form.Item>
-            <Title level={5}>Password</Title>
-            <Form.Item
-              name="password"
-              rules={[
-                () => ({
-                  validator(rule, value = "") {
-                    if (value.length > 0 && value.length < 7) {
-                      return Promise.reject("Code length 7-20");
-                    } else if (value.length === 0) {
-                      return Promise.reject("Require");
-                    } else {
-                      return Promise.resolve();
-                    }
-                  },
-                }),
-              ]}
-            >
-              <Input placeholder="Password" type="password" />
-            </Form.Item>
-          </Form.Item>
+          <div className="login_form">
+            <div className="login_form_item">
+              <img src="/login.png" alt="" />
+            </div>
+            <div className="login_form_item">
+              <Form.Item>
+                <Title level={5}>Password</Title>
+                <Form.Item
+                  name="password"
+                  rules={[
+                    () => ({
+                      validator(rule, value = "") {
+                        if (value.length > 0 && value.length < 7) {
+                          return Promise.reject("Code length 7-20");
+                        } else if (value.length === 0) {
+                          return Promise.reject("Require");
+                        } else {
+                          return Promise.resolve();
+                        }
+                      },
+                    }),
+                  ]}
+                >
+                  <Input placeholder="Password" type="password" />
+                </Form.Item>
+              </Form.Item>
 
-          <Form.Item>
-            <Title level={5}>Confirm Password</Title>
-            <Form.Item
-              name="confirmPassword"
-              rules={[
-                () => ({
-                  validator(rule, value = "") {
-                    if (value.length > 0 && value.length < 7) {
-                      return Promise.reject("Code length 7-20");
-                    } else if (value.length === 0) {
-                      return Promise.reject("Require");
-                    } else {
-                      return Promise.resolve();
-                    }
-                  },
-                }),
-              ]}
-            >
-              <Input placeholder="Confirm Password" type="password" />
-            </Form.Item>
-          </Form.Item>
+              <Form.Item>
+                <Title level={5}>Confirm Password</Title>
+                <Form.Item
+                  name="confirmPassword"
+                  rules={[
+                    () => ({
+                      validator(rule, value = "") {
+                        if (value.length > 0 && value.length < 7) {
+                          return Promise.reject("Code length 7-20");
+                        } else if (value.length === 0) {
+                          return Promise.reject("Require");
+                        } else {
+                          return Promise.resolve();
+                        }
+                      },
+                    }),
+                  ]}
+                >
+                  <Input placeholder="Confirm Password" type="password" />
+                </Form.Item>
+              </Form.Item>
 
-          <div className="group_btn_regis">
-            <Button onClick={backToPage1} type="primary">
-              Back
-            </Button>
-            <Button type="primary" htmlType="submit">
-              Register
-            </Button>
-          </div>
+              <div className="group_btn_regis">
+                <Button onClick={backToPage1} type="primary">
+                  Back
+                </Button>
+                <Button type="primary" htmlType="submit">
+                  Register
+                </Button>
+              </div>
 
-          <div className="form-navigate">
-            <span>Do not have an account?</span>
-            <span onClick={navigateLogin} className="register">
-              Login
-            </span>
+              <div className="form-navigate">
+                <span>Do have an account?</span>
+                <span onClick={navigateLogin} className="register">
+                  Login
+                </span>
+              </div>
+            </div>
           </div>
         </Form>
       )}

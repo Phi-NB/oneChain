@@ -1,12 +1,11 @@
 import React, { useState, useEffect } from "react";
-import { Typography, message } from "antd";
+import { Typography, message, Button, Input, Form } from "antd";
 import "antd/dist/antd.css"; // or 'antd/dist/antd.less'
 import "../../styles/Login.scss";
 import { useNavigate } from "react-router";
-import { Formik, Field, Form } from "formik";
 import * as Yup from "yup";
 import db from "../../firebase/config";
-import Loading from '../../components/Loading.jsx'
+import Loading from "../../components/Loading.jsx";
 
 const { Title } = Typography;
 
@@ -15,33 +14,22 @@ const success = () => {
 };
 
 const error = () => {
-  message.error("Login failed");
+  message.error("Account or password is not precision");
 };
 
 function Login(props) {
   const navigate = useNavigate();
-  const [isLoading, setIsLoading] = useState(true)
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     setTimeout(() => {
-      setIsLoading(false)
-    }, 1000)
-  })
-
-  if(isLoading) {
-    return <Loading />
-  }
-
-  const DisplayingErrorMessagesSchema = Yup.object().shape({
-    code: Yup.string()
-      .min(7, "Username length 7-20")
-      .max(20, "Username length 7-20")
-      .required("Required"),
-    password: Yup.string()
-      .min(8, "Password length 8-20")
-      .max(20, "Password length 8-20")
-      .required("Required"),
+      setIsLoading(false);
+    }, 1000);
   });
+
+  if (isLoading) {
+    return <Loading />;
+  }
 
   const submitLogin = async (data) => {
     const events = db.collection("user");
@@ -68,6 +56,10 @@ function Login(props) {
     navigate("/register");
   };
 
+  const onFinishFailed = (value) => {
+    error("Please enter all fields");
+  };
+
   function setCookie(cname, cvalue, exdays) {
     const d = new Date();
     d.setTime(d.getTime() + exdays * 24 * 60 * 60 * 1000);
@@ -81,40 +73,85 @@ function Login(props) {
         LOGIN
       </Title>
 
-      <Formik
-        validationSchema={DisplayingErrorMessagesSchema}
-        initialValues={{
-          code: "",
-          password: "",
-        }}
-        onSubmit={submitLogin}
-      >
-        {({ errors, touched }) => (
-          <Form>
-            <div className="form_control">
-              <p>Username</p>
-              <Field name="code" type="text" placeholder="Username" />
-              {touched.code && errors.code && (
-                <div className="message_erro">{errors.code}</div>
-              )}
+      <Form
+          name="page1"
+          labelCol={{
+            span: 8,
+          }}
+          wrapperCol={{
+            span: 16,
+          }}
+          initialValues={{
+            remember: true,
+          }}
+          onFinish={submitLogin}
+          onFinishFailed={onFinishFailed}
+          autoComplete="off"
+        >
+          <div className="login_form">
+            <div className="login_form_item">
+              <img src="/login.png" alt="" />
             </div>
-            <div className="form_control">
-              <p>Password</p>
-              <Field name="password" type="password" placeholder="Password" />
-              {touched.password && errors.password && (
-                <div className="message_erro">{errors.password}</div>
-              )}
+            <div className="login_form_item">
+              <Form.Item>
+                <Title level={5}>Username</Title>
+                <Form.Item
+                  name="code"
+                  rules={[
+                    () => ({
+                      validator(rule, value = "") {
+                        if (value.length > 0 && value.length < 7) {
+                          return Promise.reject("Code length 7-20");
+                        } else if (value.length === 0) {
+                          return Promise.reject("Require");
+                        } else {
+                          return Promise.resolve();
+                        }
+                      },
+                    }),
+                  ]}
+                >
+                  <Input placeholder="Username" />
+                </Form.Item>
+              </Form.Item>
+
+              <Form.Item>
+                <Title level={5}>Password</Title>
+                <Form.Item
+                  name="password"
+                  rules={[
+                    () => ({
+                      validator(rule, value = "") {
+                        if (value.length > 0 && value.length < 7) {
+                          return Promise.reject("Code length 7-20");
+                        } else if (value.length === 0) {
+                          return Promise.reject("Require");
+                        } else {
+                          return Promise.resolve();
+                        }
+                      },
+                    }),
+                  ]}
+                >
+                  <Input.Password placeholder="Password" type="password" />
+                </Form.Item>
+              </Form.Item>
+
+              <Form.Item>
+                <Button type="primary" htmlType="submit">
+                  Login
+                </Button>
+              </Form.Item>
+
+              <div className="form-navigate">
+                <span>Do not have an account?</span>
+                <span onClick={navigateRegister} className="register">
+                  Register
+                </span>
+              </div>
             </div>
-            <button type="submit">Submit</button>
-            <div className="form-navigate">
-              <span>Do not have an account?</span>
-              <span onClick={navigateRegister} className="register">
-                Register
-              </span>
-            </div>
-          </Form>
-        )}
-      </Formik>
+          </div>
+        </Form>
     </div>
   );
 }

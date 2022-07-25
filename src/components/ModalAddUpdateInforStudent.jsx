@@ -10,12 +10,15 @@ import {
   DatePicker,
   message,
   Spin,
+  Upload,
+  Progress,
 } from "antd";
 import getDataStudent, {
   addDataStudent,
   updateDataStudent,
 } from "../services/student";
 import { storage } from "../firebase/config";
+import { UploadOutlined } from "@ant-design/icons";
 
 const { Title } = Typography;
 const { Option } = Select;
@@ -39,6 +42,8 @@ const error = (mess) => {
 
 function ModalAddUpdateInforStudent(props) {
   const [urlImage, setUrlImage] = useState("");
+  const [defaultFileList, setDefaultFileList] = useState([]);
+  const [progress, setProgress] = useState(0);
 
   // Hàm call api add và update thông tin sinh viên
   const onFinish = async (values) => {
@@ -91,11 +96,71 @@ function ModalAddUpdateInforStudent(props) {
             .getDownloadURL()
             .then((url) => {
               setUrlImage(url);
-              console.log(url);
             });
         }
       );
     }
+  };
+
+  const handleChange = (info) => {
+    // if (info.file.status === "uploading") {
+    //   console.log(info.file, info.fileList);
+    // }
+
+    // if (info.file.status === "done") {
+    //   success(`${info.file.name} file uploaded successfully`);
+    // } else if (info.file.status === "error") {
+    //   error(`${info.file.name} file upload failed.`);
+    // }
+  };
+
+  const customUpload = async ({ onSuccess, onProgress, onError, file }) => {
+    const metadata = {
+      contentType: "image/jpeg",
+    };
+
+    const uploadTask = storage.ref(`images/${file.name}`).put(file, metadata);
+
+    uploadTask.on(
+      "state_change",
+      function progress(snapshot) {
+        onProgress(
+          {
+            percent:
+              Math.floor(
+                snapshot.bytesTransferred / snapshot.totalBytes
+              ).toFixed(2) * 100,
+          },
+          file
+        );
+      },
+      function error(err) {
+        onError(err, file);
+      },
+
+      function complete() {
+        storage
+          .ref("images")
+          .child(file.name)
+          .getDownloadURL()
+          .then((url) => {
+            setUrlImage(url);
+            storage
+              .ref("images")
+              .child(file.name)
+              .getDownloadURL()
+              .then((url) => {
+                setUrlImage(url);
+                console.log(url);
+                onSuccess(url, file);
+              });
+          });
+      },
+      (snapshot) => {},
+      (error) => {
+        console.log(error);
+      }
+    );
   };
 
   const onFinishFailed = async (errorInfo) => {
@@ -300,8 +365,7 @@ function ModalAddUpdateInforStudent(props) {
                     { required: true, message: "Please select an option!" },
                   ]}
                 >
-                  <Select
-                  >
+                  <Select>
                     <Option value="Information Technology">
                       Information Technology
                     </Option>
@@ -345,7 +409,12 @@ function ModalAddUpdateInforStudent(props) {
               <Form.Item>
                 <Title level={5}>Avatart</Title>
                 <Form.Item>
-                  <input type="file" onChange={getFileUploadInput} />
+                  <Upload
+                    onChange={handleChange}
+                    customRequest={(e) => customUpload(e)}
+                  >
+                    <Button icon={<UploadOutlined />}>Click to upload avatart</Button>
+                  </Upload>
                 </Form.Item>
               </Form.Item>
             </div>
