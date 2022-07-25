@@ -331,6 +331,13 @@ input[type="number"] {
       } 
     }
   }
+
+  .ant-dropdown {
+    width: 120px;
+    .ant-dropdown-menu-item {
+      padding: 8px 10px;
+    }
+  }
 }
 
 @media (max-width: 576px) and (min-width: 480px) {

@@ -3,7 +3,6 @@ import { Typography, message, Button, Input, Form } from "antd";
 import "antd/dist/antd.css"; // or 'antd/dist/antd.less'
 import "../../styles/Login.scss";
 import { useNavigate } from "react-router";
-import * as Yup from "yup";
 import db from "../../firebase/config";
 import Loading from "../../components/Loading.jsx";
 

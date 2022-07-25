@@ -2,31 +2,16 @@ import React, { useState, useEffect } from "react";
 import {
   Input,
   Button,
-  Popconfirm,
   Typography,
   Select,
   Layout,
-  Table,
   Form,
   message,
-  Card,
-  Col,
-  Row,
-  Avatar,
-  Dropdown,
-  Menu,
-  Spin,
   Pagination,
 } from "antd";
 import {
-  DeleteOutlined,
-  EditOutlined,
   UserAddOutlined,
   MenuUnfoldOutlined,
-  EyeOutlined,
-  UserOutlined,
-  MoreOutlined,
-  EllipsisOutlined,
 } from "@ant-design/icons";
 import "../styles/ContentStudentHome.scss";
 import getDataStudent, {
@@ -37,6 +22,8 @@ import moment from "moment";
 import Loading from "../components/Loading.jsx";
 import ModalDisplayInforStudent from "./ModalDisplayInforStudent";
 import ModalAddUpdateInforStudent from "./ModalAddUpdateInforStudent";
+import GridViewStudent from "./GridViewStudent";
+import TableViewStudent from "./TableViewStudent";
 
 const { Title } = Typography;
 const { Search } = Input;
@@ -45,10 +32,6 @@ const { Header } = Layout;
 
 const success = (mess) => {
   message.success(mess);
-};
-
-const error = (mess) => {
-  message.error(mess);
 };
 
 function ContentHomeStudent(props) {
@@ -64,7 +47,6 @@ function ContentHomeStudent(props) {
   const [isLoading, setIsLoading] = useState(true);
   const [displayTable, setDisplayTable] = useState(false);
   const [displayGrid, setDisplayTGrid] = useState(true);
-  const [loading, setLoading] = useState(false);
   const [form] = Form.useForm();
   const [currentPage, setCurrentPage] = useState(1);
   const limit = 6;
@@ -74,13 +56,10 @@ function ContentHomeStudent(props) {
   const [colorActiveButtonGrid, setColorActiveButtonGrid] = useState("#f0b376");
   const [colorActiveButtonTable, setColorActiveButtonTable] =
     useState("#e78539");
+
   // Khởi chạy dữ liệu
   useEffect(() => {
-    try {
-      getStudent();
-    } catch {
-    } finally {
-    }
+    getStudent();
   }, []);
 
   // Hàm lấy dữ liệu
@@ -88,7 +67,6 @@ function ContentHomeStudent(props) {
     const data = await getDataStudent();
     setStudents(data);
   };
-  
 
   // Hàm chuyển đổi dữ liệu trước khi thêm vào bảng
   const data = currentTodos.map((student, index) => {
@@ -111,6 +89,7 @@ function ContentHomeStudent(props) {
     };
   });
 
+  // loading
   if (data.length === 0) {
     setTimeout(() => {
       setIsLoading(false);
@@ -120,81 +99,6 @@ function ContentHomeStudent(props) {
   if (isLoading) {
     return <Loading />;
   }
-
-  const columns = [
-    {
-      title: "Index",
-      dataIndex: "key",
-      key: "key",
-      align: "center",
-    },
-    {
-      title: "Student Code",
-      dataIndex: "code",
-      key: "code",
-    },
-    {
-      title: "Name",
-      dataIndex: "username",
-      key: "username",
-    },
-    {
-      title: "Class",
-      dataIndex: "class",
-      key: "class",
-      align: "center",
-    },
-    {
-      title: "Specialized",
-      dataIndex: "specialized",
-      key: "specialized",
-      align: "center",
-    },
-    {
-      title: "Status",
-      dataIndex: "status",
-      key: "status",
-    },
-    {
-      title: "Phone",
-      dataIndex: "phone",
-      key: "phone",
-    },
-    {
-      title: "Action",
-      key: "action",
-      align: "center",
-      render: (_, record) => (
-        <div>
-          <Popconfirm
-            title="Sure to update?"
-            onClick={() => setIdStudentUpdatess(record)}
-            onConfirm={() => handleUpdateStudent(record)}
-          >
-            <EditOutlined className="icon-handle" />
-          </Popconfirm>
-          <Popconfirm
-            title="Sure to delete?"
-            onClick={() => setIdStudentDelete(record)}
-            onConfirm={() => {
-              handleDeleteStudent(record);
-            }}
-          >
-            <DeleteOutlined className="icon-handle" />
-          </Popconfirm>
-          <Popconfirm
-            title="Sure to see?"
-            onClick={() => setIdStudentDelete(record)}
-            onConfirm={() => {
-              showProfileStudent(record);
-            }}
-          >
-            <EyeOutlined className="icon-handle" />
-          </Popconfirm>
-        </div>
-      ),
-    },
-  ];
 
   // Hàm lấy id để xóa phần tử
   const setIdStudentDelete = (record) => {
@@ -289,15 +193,15 @@ function ContentHomeStudent(props) {
   const showGridView = () => {
     setDisplayTGrid(true);
     setDisplayTable(false);
-    setColorActiveButtonGrid('#f0b376')
-    setColorActiveButtonTable('#e78539')
+    setColorActiveButtonGrid("#f0b376");
+    setColorActiveButtonTable("#e78539");
   };
-  
+
   const showTableView = () => {
     setDisplayTGrid(false);
     setDisplayTable(true);
-    setColorActiveButtonGrid('#e78539')
-    setColorActiveButtonTable('#f0b376')
+    setColorActiveButtonGrid("#e78539");
+    setColorActiveButtonTable("#f0b376");
   };
 
   const confirmDeleteStudentGridView = async (element) => {
@@ -306,40 +210,16 @@ function ContentHomeStudent(props) {
     getStudent();
   };
 
-  const menu = (element) => (
-    <Menu
-      items={[
-        {
-          label: (
-            <span onClick={() => handleUpdateStudent(element)}>Update</span>
-          ),
-          key: "1",
-        },
-        {
-          label: (
-            <Popconfirm
-              title="Title"
-              onConfirm={() => confirmDeleteStudentGridView(element)}
-            >
-              Remove
-            </Popconfirm>
-          ),
-          key: "3",
-        },
-      ]}
-    />
-  );
-
+  // show side bar
   const setShowDrawer = () => {
     props.showDrawer(true);
   };
 
+  // chuyển page phân trang
   const onChangePage = (page) => {
     setCurrentPage(page);
     // getStudent();
   };
-
-  
 
   // Render dữ liệu ra màn hình
   return (
@@ -349,9 +229,7 @@ function ContentHomeStudent(props) {
           <MenuUnfoldOutlined />
         </Button>
         <div className="site-layout-header-title">
-          <Title level={3}>
-            STUDENT MANAGEMENT
-          </Title>
+          <Title level={3}>STUDENT MANAGEMENT</Title>
         </div>
         <Button className="add-student" onClick={handleAdd}>
           <UserAddOutlined />
@@ -399,7 +277,7 @@ function ContentHomeStudent(props) {
         </Button>
         <Button
           onClick={showTableView}
-          style={{ marginLeft: 20, backgroundColor: colorActiveButtonTable}}
+          style={{ marginLeft: 20, backgroundColor: colorActiveButtonTable }}
           type="primary"
           className="btn_add_up_stu"
         >
@@ -410,87 +288,26 @@ function ContentHomeStudent(props) {
       {/* Bảng render thông tin các học sinh */}
 
       {displayTable && (
-        <Table
-          columns={columns}
-          dataSource={data}
-          pagination={false}
-          style={{ marginBottom: 40 }}
+        <TableViewStudent
+          currentTodos={currentTodos}
+          setIdStudentUpdatess={setIdStudentUpdatess}
+          handleUpdateStudent={handleUpdateStudent}
+          setIdStudentDelete={setIdStudentDelete}
+          handleDeleteStudent={handleDeleteStudent}
+          showProfileStudent={showProfileStudent}
         />
       )}
 
       {displayGrid && (
-        <div className="site-card-wrapper">
-          <Row gutter={42} justify="start">
-            {data.map((element, index) => {
-              return (
-                <Col
-                  xl={{ span: 4 }}
-                  lg={{ span: 8 }}
-                  md={{ span: 12 }}
-                  xs={{ span: 24 }}
-                  key={index}
-                >
-                  <Card
-                    bordered={false}
-                    style={{ marginBottom: 40, borderRadius: 6 }}
-                  >
-                    <Dropdown
-                      className="drop-down"
-                      overlay={menu(element)}
-                      trigger={["click"]}
-                    >
-                      <MoreOutlined />
-                    </Dropdown>
-
-                    <div style={{ margin: "-14px 0" }}>
-                      <Spin spinning={loading}>
-                        {element.image ? (
-                          <Avatar
-                            size={120}
-                            src={element.image}
-                            style={{ margin: "0 auto", display: "block" }}
-                          />
-                        ) : (
-                          <Avatar
-                            size={120}
-                            icon={<UserOutlined />}
-                            style={{ margin: "0 auto", display: "block" }}
-                          />
-                        )}
-                      </Spin>
-                    </div>
-                    <Title
-                      style={{ textAlign: "center", marginTop: 20 }}
-                      level={5}
-                    >
-                      {element.username}
-                    </Title>
-                    <div className="card_display_info_stu">
-                      <div>
-                        <div className="card_display_info_stu_item">
-                          <p style={{ textAlign: "center", width: "100%" }}>
-                            {element.code}
-                          </p>
-                        </div>
-                      </div>
-                      <div>
-                        <Button
-                          type="primary"
-                          style={{ width: "100%" }}
-                          onClick={() => showProfileStudent(element)}
-                        >
-                          View profile
-                        </Button>
-                      </div>
-                    </div>
-                  </Card>
-                </Col>
-              );
-            })}
-          </Row>
-        </div>
+        <GridViewStudent
+          data={data}
+          handleUpdateStudent={handleUpdateStudent}
+          confirmDeleteStudentGridView={confirmDeleteStudentGridView}
+          showProfileStudent={showProfileStudent}
+        />
       )}
 
+      {/* Phân trang */}
       <Pagination
         current={currentPage}
         onChange={onChangePage}
