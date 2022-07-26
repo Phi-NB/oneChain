@@ -296,6 +296,19 @@ input[type="number"] {
   z-index: 995;
 }
 
+.site-card-wrapper .ant-empty {
+  font-size: 14px;
+  line-height: 1.5715;
+  text-align: center;
+  margin: 0 auto 20px auto;
+  width: 96%;
+  background-color: #fff;
+  padding: 20px 0;
+  box-shadow: 0 0.5rem 2rem 0.25rem rgba(124, 147 ,165, 0.35);
+  border-radius: 6px;
+}
+
+
 @media (max-width: 768px) {
   .formAddUpdateStudent {
     flex-direction: column;

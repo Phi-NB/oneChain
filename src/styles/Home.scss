@@ -1,7 +1,7 @@
 $color-primary: #9bd9f2;
 $color-dark: #e78539;
 $color-btn: #e78539;
-$color-btn-light: #fbb57e;
+$color-btn-light: #f7a86c;
 body {
   background-image: url("../../public/background.png");
   background-repeat: repeat-y;
@@ -141,7 +141,7 @@ body {
   border-radius: 4px;
   &:hover,
   &:focus {
-    background-color: $color-dark;
+    background-color: $color-btn-light;
   }
 }
 
@@ -240,7 +240,7 @@ body {
 }
 
 .ant-modal {
-  min-width: 720px;
+  min-width: 810px;
 }
 
 .ant-drawer-content-wrapper {
@@ -262,9 +262,6 @@ body {
       }
       h3.ant-typography {
         margin-bottom: 0 !important;
-
-      }
-      .add-student {
       }
     }
   }
@@ -307,7 +304,7 @@ body {
   }
 
   .ant-modal {
-    min-width: 340px;
+    min-width: 320px;
   }
   .modal_display_info_user {
     flex-direction: column;
@@ -316,17 +313,20 @@ body {
   .modal_display_info_user_content {
     flex-direction: column;
   }
+  .ant-spin-container {
+    text-align: center;
+  }
   .ant-upload.ant-upload-select-picture-card {
-    left: 58%;
-  } 
+    left: 14%;
+  }
   .ant-avatar-image {
     margin: 0 auto;
     display: block;
   }
   .modal_display_info_user_content {
-      .modal_display_infor_user_colLeft {
-        margin-left: 0;
-      }
+    .modal_display_infor_user_colLeft {
+      margin-left: 0;
+    }
   }
 
   .ant-form-item-control-input-content {
@@ -336,11 +336,11 @@ body {
   .modal_display_info_stu {
     flex-direction: column;
     .modal_display_info_stu_avatar {
-        width: 100%;
+      width: 100%;
     }
     .modal_display_info_stu_list {
-        margin-left: 0;
-        width: 100%;
+      margin-left: 0;
+      width: 100%;
     }
   }
 
@@ -351,6 +351,11 @@ body {
   .loader {
     top: 42%;
     left: 42%;
+  }
+
+  .ant-spin-nested-loading > div > .ant-spin .ant-spin-dot {
+    top: 36% !important;
+    left: 52% !important;
   }
 
   thead {

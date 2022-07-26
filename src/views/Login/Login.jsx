@@ -5,6 +5,7 @@ import "../../styles/Login.scss";
 import { useNavigate } from "react-router";
 import db from "../../firebase/config";
 import Loading from "../../components/Loading.jsx";
+import sha256 from 'crypto-js/sha256';
 
 const { Title } = Typography;
 
@@ -19,6 +20,12 @@ const error = () => {
 function Login(props) {
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(true);
+
+  const hasd = (mess, key) => {
+    const ciphertext = sha256(key , mess).toString();
+    return ciphertext
+  }
+
 
   useEffect(() => {
     setTimeout(() => {
@@ -38,7 +45,7 @@ function Login(props) {
         tempDoc.push({ id: doc.id, ...doc.data() });
       });
       const user = tempDoc.filter((doc) => {
-        return doc.code === data.code && doc.password === data.password;
+        return doc.code === data.code && doc.password === hasd( 'phi' ,data.password);
       });
 
       if (user.length !== 0) {

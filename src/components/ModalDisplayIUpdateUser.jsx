@@ -20,13 +20,8 @@ const success = (mess) => {
   const error = (mess) => {
     message.error(mess);
   };
-  
-  const warning = (mess) => {
-    message.warning(mess);
-  };
 
 function ModalDisplayIUpdateUser(props) {
-  const [form] = Form.useForm();
   const [cookieUser, setCookieUser] = useCookies(["user"]);
 
 
@@ -55,7 +50,7 @@ function ModalDisplayIUpdateUser(props) {
         user[0].image,
         !user[0].dateJoin ? "" : user[0].dateJoin
       );
-      form.resetFields();
+      props.form.resetFields();
       success("Update student success");
       props.getDataUser();
       props.onCancel()
@@ -83,7 +78,7 @@ function ModalDisplayIUpdateUser(props) {
           }}
           onFinish={onFinish}
           onFinishFailed={onFinishFailed}
-          form={form}
+          form={props.form}
         >
           <div className="formAddUpdateStudent">
             <div className="formAddUpdateStudent-item">

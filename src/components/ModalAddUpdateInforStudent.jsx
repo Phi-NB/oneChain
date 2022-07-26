@@ -9,9 +9,7 @@ import {
   Radio,
   DatePicker,
   message,
-  Spin,
   Upload,
-  Progress,
 } from "antd";
 import getDataStudent, {
   addDataStudent,
@@ -42,12 +40,10 @@ const error = (mess) => {
 
 function ModalAddUpdateInforStudent(props) {
   const [urlImage, setUrlImage] = useState("");
-  const [defaultFileList, setDefaultFileList] = useState([]);
-  const [progress, setProgress] = useState(0);
+  const [fileList, setFileList] = useState([]);
 
   // Hàm call api add và update thông tin sinh viên
   const onFinish = async (values) => {
-    console.log(values);
     if (props.displayBtnAdd) {
       const dataStudent = await getDataStudent();
       const user = dataStudent.filter((element) => {
@@ -57,6 +53,7 @@ function ModalAddUpdateInforStudent(props) {
         await addDataStudent(values, urlImage);
         props.form.resetFields();
         success("Create student success");
+        setFileList([])
         props.getStudent();
       } else {
         error("Code and email no duplicates");
@@ -67,51 +64,15 @@ function ModalAddUpdateInforStudent(props) {
         return element.code === values.code || element.email === values.email;
       });
       if (user.length === 1) {
-        await updateDataStudent(values, props.idStudentUpdate, urlImage);
+        await updateDataStudent(values, props.idStudentUpdate, urlImage ? urlImage : user[0].image);
         success("Update student success");
+        setFileList([])
         props.getStudent();
         props.handleCancel();
       } else {
         error("Student code or email already exist");
       }
     }
-  };
-
-  const getFileUploadInput = (e) => {
-    if (e.target.files[0]) {
-      const uploadTask = storage
-        .ref(`images/${e.target.files[0].name}`)
-        .put(e.target.files[0]);
-
-      uploadTask.on(
-        "state_change",
-        (snapshot) => {},
-        (error) => {
-          console.log(error);
-        },
-        () => {
-          storage
-            .ref("images")
-            .child(e.target.files[0].name)
-            .getDownloadURL()
-            .then((url) => {
-              setUrlImage(url);
-            });
-        }
-      );
-    }
-  };
-
-  const handleChange = (info) => {
-    // if (info.file.status === "uploading") {
-    //   console.log(info.file, info.fileList);
-    // }
-
-    // if (info.file.status === "done") {
-    //   success(`${info.file.name} file uploaded successfully`);
-    // } else if (info.file.status === "error") {
-    //   error(`${info.file.name} file upload failed.`);
-    // }
   };
 
   const customUpload = async ({ onSuccess, onProgress, onError, file }) => {
@@ -162,6 +123,10 @@ function ModalAddUpdateInforStudent(props) {
       }
     );
   };
+
+  const onChangeUpload = (info) =>{
+    setFileList([info.file])
+  }
 
   const onFinishFailed = async (errorInfo) => {
     if (props.displayBtnAdd) {
@@ -408,10 +373,12 @@ function ModalAddUpdateInforStudent(props) {
               </Form.Item>
               <Form.Item>
                 <Title level={5}>Avatart</Title>
-                <Form.Item>
+                <Form.Item
+                >
                   <Upload
-                    onChange={handleChange}
                     customRequest={(e) => customUpload(e)}
+                    fileList={fileList}
+                    onChange={onChangeUpload}
                   >
                     <Button icon={<UploadOutlined />}>Click to upload avatart</Button>
                   </Upload>

@@ -1,6 +1,12 @@
 import db from "../firebase/config.js";
+import sha256 from 'crypto-js/sha256';
 
 const d = new Date();
+
+const hasd = (mess, key) => {
+  const ciphertext = sha256(key , mess).toString();
+  return ciphertext
+}
 
 const getDataUser = async () => {
   const events = db.collection("user");
@@ -17,7 +23,7 @@ export const addDataUser = async (data) => {
   await db.collection("user").doc().set({
     code: data.code,
     email: data.email,
-    password: data.password,
+    password: hasd( 'phi', data.password),
     dateJoin: d.toString(),
   });
 };

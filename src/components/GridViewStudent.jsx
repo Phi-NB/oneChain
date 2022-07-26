@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Row, Col, Card, Dropdown, Spin, Avatar, Typography, Menu, Popconfirm, Button } from 'antd'
+import { Row, Col, Card, Dropdown, Spin, Avatar, Typography, Menu, Popconfirm, Button, Empty  } from 'antd'
 import {
     UserOutlined,
     MoreOutlined,
@@ -36,7 +36,7 @@ function GridViewStudent(props) {
     return (
         <div className="site-card-wrapper">
           <Row gutter={42} justify="start">
-            {props.data.map((element, index) => {
+            {props.data.length !== 0 ? props.data.map((element, index) => {
               return (
                 <Col
                   xl={{ span: 4 }}
@@ -101,7 +101,7 @@ function GridViewStudent(props) {
                   </Card>
                 </Col>
               );
-            })}
+            }) : <Empty />}
           </Row>
         </div>
     );

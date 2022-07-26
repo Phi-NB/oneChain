@@ -1,55 +1,25 @@
 import {
   UserOutlined,
   LogoutOutlined,
-  UploadOutlined,
-  MenuFoldOutlined,
-  LoadingOutlined,
-  PlusOutlined,
-  EditOutlined,
 } from "@ant-design/icons";
 import {
   Layout,
   Menu,
   Avatar,
-  Modal,
   Form,
-  Typography,
-  Input,
-  Radio,
-  DatePicker,
-  Select,
-  Button,
-  Upload,
-  message,
-  Spin,
   Drawer,
 } from "antd";
-import moment from "moment";
-import ImgCrop from "antd-img-crop";
+import moment from 'moment'
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router";
 import "../../styles/Home.scss";
 import ContentHomeStudent from "../../components/ContentHomeStudent.jsx";
 import { useCookies } from "react-cookie";
-import getDataUsers, { updateDataUser } from "../../services/user.js";
-import { storage } from "../../firebase/config";
+import getDataUsers from "../../services/user.js";
 import ModalDisplayInforUser from "../../components/ModalDisplayInforUser";
 import ModalUpdateUser from "../../components/ModalDisplayIUpdateUser";
 
 const { Content } = Layout;
-const { Title } = Typography;
-
-const success = (mess) => {
-  message.success(mess);
-};
-
-const error = (mess) => {
-  message.error(mess);
-};
-
-const warning = (mess) => {
-  message.warning(mess);
-};
 
 function Home(props) {
   const navigate = useNavigate();
@@ -58,7 +28,6 @@ function Home(props) {
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [isModalVisibleEditProf, setIsModalVisibleEditProf] = useState(false);
   const [form] = Form.useForm();
-  const [loading, setLoading] = useState(false);
   const [visibleDrawer, setVisibleDrawer] = useState(false);
 
   useEffect(() => {
@@ -184,6 +153,7 @@ function Home(props) {
         visible={isModalVisibleEditProf}
         onCancel={handleCancel}
         getDataUser={getDataUser}
+        form={form}
       />
     </Layout>
   );

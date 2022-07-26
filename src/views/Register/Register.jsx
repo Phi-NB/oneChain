@@ -3,12 +3,11 @@ import { Typography, message, Button, Input, Form } from "antd";
 import "antd/dist/antd.css"; // or 'antd/dist/antd.less'
 import "../../styles/Login.scss";
 import { useNavigate } from "react-router";
-import db from "../../firebase/config.js";
 import Loading from "../../components/Loading.jsx";
 import getDataUser, {
   addDataUser,
-  updateDataUser,
 } from "../../services/user.js";
+
 
 const { Title } = Typography;
 
@@ -26,7 +25,8 @@ function Register(props) {
   const [page1, setPage1] = useState(true);
   const [page2, setPage2] = useState(false);
   const [valuePage1, setValuePage1] = useState({});
-
+  const [formPage1] = Form.useForm();
+  const [formPage2] = Form.useForm();
   useEffect(() => {
     setTimeout(() => {
       setIsLoading(false);
@@ -40,8 +40,6 @@ function Register(props) {
   // đăng ký tài khoản
   const addAccount = async (data) => {
     const require = await getDataUser();
-
-    console.log(require);
 
     const user = require.filter((doc) => {
       return doc.code === data.code || doc.email === data.email;
@@ -79,7 +77,6 @@ function Register(props) {
   const onFinish = (value) => {
     setValuePage1({ ...value });
     navigatePage2();
-    console.log(value);
   };
 
   const onFinish2 = async (value) => {
@@ -98,6 +95,10 @@ function Register(props) {
 
   const backToPage1 = () => {
     navigatePage1();
+    formPage1.setFieldsValue({
+      code: valuePage1.code,
+      email: valuePage1.email,
+    })
   };
 
   // trả lại JSX
@@ -120,6 +121,7 @@ function Register(props) {
           }}
           onFinish={onFinish}
           onFinishFailed={onFinishFailed}
+          form={formPage1}
           autoComplete="off"
         >
           <div className="login_form">
@@ -199,6 +201,7 @@ function Register(props) {
           }}
           onFinish={onFinish2}
           onFinishFailed={onFinishFailed}
+          form={formPage2}
           autoComplete="off"
         >
           <div className="login_form">
