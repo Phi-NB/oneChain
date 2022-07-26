@@ -351,6 +351,11 @@ input[type="number"] {
       padding: 8px 10px;
     }
   }
+
+  .site-card-wrapper .ant-empty {
+    width: 100%;
+    margin: 0 22px;
+  }
 }
 
 @media (max-width: 576px) and (min-width: 480px) {
