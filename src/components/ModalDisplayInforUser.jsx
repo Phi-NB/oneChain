@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { Modal, Spin, Avatar, Upload, Typography } from "antd";
 import { UserOutlined, EditOutlined } from "@ant-design/icons";
 import { storage } from "../firebase/config";
-import getDataUsers, { updateDataUser } from "../services/user.js";
+import { updateDataUser } from "../services/user.js";
 
 import { useCookies } from "react-cookie";
 const { Title } = Typography;
@@ -24,8 +24,6 @@ const uploadButton = (
 
 function ModalDisplayInforUser(props) {
   const [loading, setLoading] = useState(false);
-  const [urlImage, setUrlImage] = useState("");
-  const [image, setImage] = useState(null);
   const [cookieUser, setCookieUser] = useCookies(["user"]);
 
   const customUpload = async ({ file }) => {
@@ -48,7 +46,6 @@ function ModalDisplayInforUser(props) {
           .child(file.name)
           .getDownloadURL()
           .then((url) => {
-            setUrlImage(url);
             if (props.user[0].dateOfBirth === undefined) {
               props.user[0].dateOfBirth = "";
             }
@@ -105,7 +102,7 @@ function ModalDisplayInforUser(props) {
                 className="avatar-uploader"
                 customRequest={customUpload}
               >
-                {image ? <img src={image} alt="avatar" /> : uploadButton}
+                {uploadButton}
               </Upload>
             </Spin>
           </div>
@@ -198,6 +195,13 @@ function ModalDisplayInforUser(props) {
           </div>
         </div>
         <div className="group_btn_edit_profile">
+          <button
+            onClick={props.showEditPro}
+            className="btn_edit_profile ant-btn-primary ant-btn"
+            style={{ marginRight: 8 }}
+          >
+            Change Password
+          </button>
           <button
             onClick={props.showEditPro}
             className="btn_edit_profile ant-btn-primary ant-btn"
