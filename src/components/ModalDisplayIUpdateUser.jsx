@@ -7,23 +7,22 @@ import {
   DatePicker,
   Button,
   Typography,
-  message
+  message,
 } from "antd";
 import { useCookies } from "react-cookie";
 import getDataUsers, { updateDataUser } from "../services/user.js";
 
 const { Title } = Typography;
 const success = (mess) => {
-    message.success(mess);
-  };
-  
-  const error = (mess) => {
-    message.error(mess);
-  };
+  message.success(mess);
+};
+
+const error = (mess) => {
+  message.error(mess);
+};
 
 function ModalDisplayIUpdateUser(props) {
   const [cookieUser, setCookieUser] = useCookies(["user"]);
-
 
   const onFinish = async (data) => {
     const dataUser = await getDataUsers();
@@ -31,29 +30,28 @@ function ModalDisplayIUpdateUser(props) {
       return element.code === data.code || element.email === data.email;
     });
     if (user.length === 1) {
-      if (!data.citizenId) {
-        data.citizenId = "";
-      }
-      if (!data.hometouwn) {
-        data.hometouwn = "";
-      }
-      if (!data.phone) {
-        data.phone = "";
-      }
-      if (!data.username) {
-        data.username = "";
-      }
+      // if (!data.citizenId) {
+      //   data.citizenId = "";
+      // }
+      // if (!data.hometouwn) {
+      //   data.hometouwn = "";
+      // }
+      // if (!data.phone) {
+      //   data.phone = "";
+      // }
+      // if (!data.username) {
+      //   data.username = "";
+      // }
       await updateDataUser(
         data,
         cookieUser.user,
         user[0].password,
         user[0].image,
-        !user[0].dateJoin ? "" : user[0].dateJoin
       );
       props.form.resetFields();
       success("Update student success");
       props.getDataUser();
-      props.onCancel()
+      props.onCancel();
     } else {
       error("Student code or email already exist");
     }
@@ -72,7 +70,7 @@ function ModalDisplayIUpdateUser(props) {
         forceRender
       >
         <Form
-          name="basic"
+          name="basic2"
           initialValues={{
             remember: true,
           }}

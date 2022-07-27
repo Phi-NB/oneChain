@@ -203,6 +203,13 @@ input[type="number"] {
   height: 30px;
 }
 
+.modalChangePass {
+  .anticon[tabindex] {
+    width: unset;
+    height: unset;
+  }
+}
+
 .ant-card-body {
   padding: 16px 24px 28px 24px;
   button {
@@ -275,6 +282,7 @@ input[type="number"] {
     width: 45%;
   }
 }
+
 
 .ant-table {
   box-shadow: 0 0.5rem 2rem 0.25rem rgba(124, 147 ,165, 0.35);

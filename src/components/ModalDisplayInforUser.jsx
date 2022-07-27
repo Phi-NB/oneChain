@@ -3,8 +3,9 @@ import { Modal, Spin, Avatar, Upload, Typography } from "antd";
 import { UserOutlined, EditOutlined } from "@ant-design/icons";
 import { storage } from "../firebase/config";
 import { updateDataUser } from "../services/user.js";
-
 import { useCookies } from "react-cookie";
+import ModalChangePassword from "../components/ModalChangePassword.jsx";
+
 const { Title } = Typography;
 
 const convertDate = (value) => {
@@ -25,9 +26,20 @@ const uploadButton = (
 function ModalDisplayInforUser(props) {
   const [loading, setLoading] = useState(false);
   const [cookieUser, setCookieUser] = useCookies(["user"]);
+  const [displayModalChangePass, setDisplayModalChangePass] = useState(false);
+
+  const showChangePass = () => {
+    setDisplayModalChangePass(true);
+    props.onCancel()
+  };
+
+  const onCancel = () => {
+    setDisplayModalChangePass(false);
+    props.showInfoUser()
+  };
 
   const customUpload = async ({ file }) => {
-    setLoading(true)
+    setLoading(true);
     const metadata = {
       contentType: "image/jpeg",
     };
@@ -46,35 +58,34 @@ function ModalDisplayInforUser(props) {
           .child(file.name)
           .getDownloadURL()
           .then((url) => {
-            if (props.user[0].dateOfBirth === undefined) {
-              props.user[0].dateOfBirth = "";
-            }
-            if (props.user[0].citizenId === undefined) {
-              props.user[0].citizenId = "";
-            }
-            if (props.user[0].phone === undefined) {
-              props.user[0].phone = "";
-            }
-            if (props.user[0].gender === undefined) {
-              props.user[0].gender = "";
-            }
-            if (props.user[0].hometouwn === undefined) {
-              props.user[0].hometouwn = "";
-            }
-            if (props.user[0].username === undefined) {
-              props.user[0].username = "";
-            }
+            // if (props.user[0].dateOfBirth === undefined) {
+            //   props.user[0].dateOfBirth = "";
+            // }
+            // if (props.user[0].citizenId === undefined) {
+            //   props.user[0].citizenId = "";
+            // }
+            // if (props.user[0].phone === undefined) {
+            //   props.user[0].phone = "";
+            // }
+            // if (props.user[0].gender === undefined) {
+            //   props.user[0].gender = "";
+            // }
+            // if (props.user[0].hometouwn === undefined) {
+            //   props.user[0].hometouwn = "";
+            // }
+            // if (props.user[0].username === undefined) {
+            //   props.user[0].username = "";
+            // }
             updateDataUser(
               props.user[0],
               cookieUser.user,
               props.user[0].password,
-              url,
-              props.user[0].dateJoin
+              url
             );
             props.getDataUser();
             setTimeout(() => {
               setLoading(false);
-            }, 2000)
+            }, 2000);
           });
       }
     );
@@ -91,7 +102,9 @@ function ModalDisplayInforUser(props) {
         <div className="modal_display_info_user">
           <div>
             <Spin spinning={loading}>
-              {props.user.length !== 0 && props.user[0].image !== "" ? (
+              {props.user.length !== 0 &&
+              props.user[0].image !== undefined &&
+              props.user[0].image !== "" ? (
                 <Avatar size={120} src={props.user[0].image} />
               ) : (
                 <Avatar size={120} icon={<UserOutlined />} />
@@ -196,7 +209,7 @@ function ModalDisplayInforUser(props) {
         </div>
         <div className="group_btn_edit_profile">
           <button
-            onClick={props.showEditPro}
+            onClick={showChangePass}
             className="btn_edit_profile ant-btn-primary ant-btn"
             style={{ marginRight: 8 }}
           >
@@ -210,6 +223,13 @@ function ModalDisplayInforUser(props) {
           </button>
         </div>
       </Modal>
+
+      <ModalChangePassword
+        onCancel={onCancel}
+        displayModal={displayModalChangePass}
+        user={props.user[0]}
+        getDataUser={props.getDataUser}
+      />
     </div>
   );
 }

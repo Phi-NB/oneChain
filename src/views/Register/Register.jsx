@@ -227,7 +227,7 @@ function Register(props) {
                     }),
                   ]}
                 >
-                  <Input placeholder="Password" type="password" />
+                  <Input.Password placeholder="Password" type="password" />
                 </Form.Item>
               </Form.Item>
 
@@ -249,7 +249,7 @@ function Register(props) {
                     }),
                   ]}
                 >
-                  <Input placeholder="Confirm Password" type="password" />
+                  <Input.Password placeholder="Confirm password" type="password" />
                 </Form.Item>
               </Form.Item>
 

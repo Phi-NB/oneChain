@@ -22,7 +22,7 @@ function Login(props) {
   const [isLoading, setIsLoading] = useState(true);
 
   const hasd = (mess, key) => {
-    const ciphertext = sha256(key , mess).toString();
+    const ciphertext = sha256(key + mess).toString();
     return ciphertext
   }
 

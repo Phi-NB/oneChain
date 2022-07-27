@@ -1,15 +1,6 @@
-import {
-  UserOutlined,
-  LogoutOutlined,
-} from "@ant-design/icons";
-import {
-  Layout,
-  Menu,
-  Avatar,
-  Form,
-  Drawer,
-} from "antd";
-import moment from 'moment'
+import { UserOutlined, LogoutOutlined } from "@ant-design/icons";
+import { Layout, Menu, Avatar, Form, Drawer } from "antd";
+import moment from "moment";
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router";
 import "../../styles/Home.scss";
@@ -49,6 +40,11 @@ function Home(props) {
 
   const handleCancel = () => {
     setIsModalVisible(false);
+    setIsModalVisibleEditProf(false);
+    // showInfoUser()
+  };
+  const handleCancelModalUpdate = () => {
+    setIsModalVisible(true);
     setIsModalVisibleEditProf(false);
   };
 
@@ -100,7 +96,9 @@ function Home(props) {
       >
         <div>
           <div className="logo">
-            {user.length !== 0 && user.image !== "" ? (
+            {user.length !== 0 &&
+            user[0].image !== undefined &&
+            user[0].image !== "" ? (
               <Avatar
                 onClick={showInfoUser}
                 size={120}
@@ -146,12 +144,13 @@ function Home(props) {
         user={user}
         getDataUser={getDataUser}
         showEditPro={showEditPro}
+        showInfoUser={showInfoUser}
       />
 
       {/* modal sửa thông tin user */}
       <ModalUpdateUser
         visible={isModalVisibleEditProf}
-        onCancel={handleCancel}
+        onCancel={handleCancelModalUpdate}
         getDataUser={getDataUser}
         form={form}
       />
