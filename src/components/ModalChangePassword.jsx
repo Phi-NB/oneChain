@@ -16,12 +16,11 @@ const error = (mess) => {
 
 function ModalChangePassword(props) {
   const [cookieUser, setCookieUser] = useCookies(["user"]);
+  const [form] = Form.useForm();
   const hasd = (mess, key) => {
     const ciphertext = sha256(key + mess).toString();
     return ciphertext;
   };
-
-
 
   const submitChangePass = async (value) => {
     if (props.user.password !== hasd("phi", value.oldPassword)) {
@@ -55,7 +54,7 @@ function ModalChangePassword(props) {
           value.newPassword,
           props.user.image ? props.user.image : ""
         );
-        // props.form.resetFields();
+        form.resetFields();
         success("Update password success");
         props.getDataUser();
         props.onCancel();
@@ -86,6 +85,7 @@ function ModalChangePassword(props) {
           }}
           onFinish={submitChangePass}
           autoComplete="off"
+          form={form}
         >
           <div className="login_form">
             <div className="login_form_item">

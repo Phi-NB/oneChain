@@ -41,6 +41,7 @@ function GridViewStudent(props) {
                 <Col
                   xl={{ span: 4 }}
                   lg={{ span: 8 }}
+                  sm={{ span: 12 }}
                   md={{ span: 12 }}
                   xs={{ span: 24 }}
                   key={index}
