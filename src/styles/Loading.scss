@@ -1,3 +1,5 @@
+@import './Media.scss';
+
 @keyframes spin {
   0% {
     transform: rotate(0deg);
@@ -18,4 +20,8 @@
   width: 80px;
   height: 80px;
   animation: spin 1s linear infinite;
+  @include mobile {
+    top: 42%;
+    left: 42%;
+  }
 }

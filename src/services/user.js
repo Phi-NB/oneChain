@@ -32,28 +32,14 @@ export const addDataUser = async (data) => {
 };
 
 export const updateDataUser = async (data, id, password, image) => {
-  if (!data.dateOfBirth) {
-    data.dateOfBirth = "";
-  }
-  if (!data.gender) {
-    data.gender = "";
-  }
-  if (!data.username) {
-    data.username = "";
-  }
-  if (!data.hometouwn) {
-    data.hometouwn = "";
-  }
-  if (!data.citizenId) {
-    data.citizenId = "";
-  }
-  if (!data.phone) {
-    data.phone = "";
-  }
-  if (!image) {
-    image = "";
-  }
-  console.log(data, id, password, image);
+  data.dateOfBirth = data.dateOfBirth || ''
+  data.gender = data.gender || ''
+  data.username = data.username || ''
+  data.hometouwn = data.hometouwn || ''
+  data.citizenId = data.citizenId || ''
+  data.phone = data.phone || ''
+  image = image || ''
+  
   await db
     .collection("user")
     .doc(id)
@@ -71,6 +57,7 @@ export const updateDataUser = async (data, id, password, image) => {
       phone: data.phone,
       password: password.length > 20 ? password : hasd("phi", password),
       image: image,
+      dateJoin: data.dateJoin
     });
 };
 

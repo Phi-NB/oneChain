@@ -1,7 +1,7 @@
 import React from 'react';
 import Login from '../views/Login/Login.jsx'
 import Register from '../views/Register/Register.jsx'
-import Home from '../views/home/Home.jsx'
+import Home from '../views/Home/index.jsx'
 
 
 const routesConfig = 

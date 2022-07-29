@@ -1,0 +1,39 @@
+@import './Media.scss';
+
+.ant-modal-content {
+    .modal_display_info_stu {
+        display: flex;
+        @include mobile {
+            flex-direction: column;
+            .modal_display_info_stu_avatar {
+                width: 100%;
+            }
+            .modal_display_info_stu_list {
+                margin-left: 0;
+                width: 100%;
+            }
+        }
+    }
+    .modal_display_info_stu_item {
+        display: flex;
+        border-bottom: 1px solid #e5e5e5;
+        margin-top: 10px;
+        &:last-child {
+            border: none;
+        }
+    }
+    .modal_display_info_stu_item_value {
+        font-weight: 700;
+    }
+    .modal_display_info_stu_item_left {
+        width: 70%;
+    }
+    .modal_display_info_stu_item_right {
+        width: 30%;
+    }
+    .group_btn_edit_profile {
+        display: flex;
+        justify-content: flex-end;
+        margin: 8px 0;
+    }
+}
